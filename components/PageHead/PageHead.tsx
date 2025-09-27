@@ -52,7 +52,7 @@ const PageHead: React.FC<Props> = ({
                 <>
                     <meta name='twitter:card' content='summary_large_image' />
                     <meta name='twitter:image' content={socialImage} />
-                    <meta property='og:image' content="https://www.notion.so/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F671f6c40-9bd7-4faf-b2cc-493a64aca848%2F131266225_763814284344382_3700534037825427011_o.jpg?table=block&id=16dc2d2f-dc8c-46ee-96f5-81afde5a0c0c&cache=v2" />
+                    <meta property='og:image' content={socialImage} />
                 </>
             ) : (
                 <meta name='twitter:card' content='summary' />
