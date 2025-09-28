@@ -8,8 +8,8 @@ module.exports = {
     rootNotionSpaceId: null,
 
     // basic site info (required)
-    name: 'Who wrote this shit?',
-    domain: 'whowrotethisshit.vercel.app',
+    name: "Hieu's blogs",
+    domain: 'blog.hieunt.me',
     author: 'Elliot Nguyen',
 
     // open graph metadata (optional)
