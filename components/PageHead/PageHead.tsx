@@ -70,19 +70,18 @@ const PageHead: React.FC<Props> = ({
 
             <meta property='og:type' content={isBlogPost ? 'article' : 'website'} />
 
-            <Script
+            <script
                 defer
                 src='https://cloud.umami.is/script.js'
                 data-website-id='3580f550-d3be-4d55-ba73-12593758e87b'
-            ></Script>
+            ></script>
 
-            <Script
+            <script
                 defer
                 type='text/javascript'
                 src='https://assets.calendly.com/assets/external/widget.js'
                 async
-            ></Script>
-
+            ></script>
         </Head>
     );
 };
