@@ -6,7 +6,7 @@ import { mapNotionImageUrl } from './map-image-url';
 import * as config from 'lib/config';
 
 
-const mySiteNotion = new NotionAPI({
+export const mySiteNotion = new NotionAPI({
     apiBaseUrl: process.env.NOTION_API_BASE_URL
 });
 
