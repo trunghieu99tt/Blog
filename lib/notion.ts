@@ -1,26 +1,35 @@
 import { NotionAPI } from 'notion-client';
-import { ExtendedRecordMap, SearchParams, SearchResults } from 'notion-types';
+import { Block, ExtendedRecordMap, SearchParams, SearchResults } from 'notion-types';
 import { getPreviewImages } from './get-preview-images';
 import { mapNotionImageUrl } from './map-image-url';
 
 import * as config from 'lib/config';
 
-import { iPost } from './types';
 
-export const notion = new NotionAPI({
+const mySiteNotion = new NotionAPI({
     apiBaseUrl: process.env.NOTION_API_BASE_URL
 });
 
-export const getAllPages = async (): Promise<iPost[]> => {
-    const response = await fetch(
-        `https://notion-api.splitbee.io/v1/table/${config.rootNotionPageId}`
-    );
-    const data = await response.json();
-    return data;
+export const baseNotion = new NotionAPI({
+})
+
+export const getAllPages = async (): Promise<Block[]> => {
+    try {
+        const response = await mySiteNotion.getPage(config.rootNotionPageId);
+        const blocks = response?.block;
+        return Object.values(blocks).map(block => block.value)
+    } catch (error) {
+        return []
+    }
 };
 
 export async function getPage(pageId: string): Promise<ExtendedRecordMap> {
-    const pages = await notion.getPage(pageId);
+    let pages = null
+    if (pageId == config.rootNotionPageId) {
+        pages = await mySiteNotion.getPage(pageId);
+    } else {
+        pages = await baseNotion.getPage(pageId);
+    }
     const blockIds = Object.keys(pages.block);
 
     const recordMap = { ...pages };
@@ -65,5 +74,5 @@ export async function getPage(pageId: string): Promise<ExtendedRecordMap> {
 }
 
 export async function search(params: SearchParams): Promise<SearchResults> {
-    return notion.search(params);
+    return mySiteNotion.search(params);
 }

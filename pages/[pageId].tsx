@@ -4,7 +4,7 @@ import { getSiteMaps } from 'lib/get-site-maps';
 import { resolveNotionPage } from 'lib/resolve-notion-page';
 import { NotionPage } from 'components';
 import { getAllPages } from 'lib/notion';
-import { iPost } from 'lib/types';
+import { Block, iPost } from 'lib/types';
 import { parsePageId } from 'notion-utils';
 
 export const getStaticProps = async (context) => {
@@ -20,10 +20,9 @@ export const getStaticProps = async (context) => {
         }
 
         const allPosts = await getAllPages();
-        const post =
-            allPosts.find((post: iPost) => {
-                return post.id === parsePageId(rawPageId);
-            }) || null;
+        const post = allPosts.find((post: Block) => {
+            return post?.id === parsePageId(rawPageId);
+        }) || null;
         const props = await resolveNotionPage(domain, rawPageId);
 
         return {
