@@ -3,7 +3,7 @@ import { getAllPagesInSpace } from 'notion-utils';
 
 import * as types from './types';
 import { includeNotionIdInUrls } from './config';
-import { mySiteNotion as notion } from './notion';
+import { getPage } from './notion';
 import { getCanonicalPageId } from './get-canonical-page-id';
 
 const uuid = !!includeNotionIdInUrls;
@@ -17,7 +17,7 @@ export async function getAllPagesImpl(
     const pageMap = await getAllPagesInSpace(
         rootNotionPageId,
         rootNotionSpaceId,
-        notion.getPage.bind(notion)
+        getPage,
     );
 
     const canonicalPageMap = Object.keys(pageMap).reduce(
@@ -31,7 +31,8 @@ export async function getAllPagesImpl(
                 uuid
             });
 
-            if (map[canonicalPageId]) {
+
+            if (canonicalPageId != null && map[canonicalPageId]) {
                 console.error(
                     'error duplicate canonical page id',
                     canonicalPageId,

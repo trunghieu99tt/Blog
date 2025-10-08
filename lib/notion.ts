@@ -25,7 +25,7 @@ export const getAllPages = async (): Promise<Block[]> => {
 
 export async function getPage(pageId: string): Promise<ExtendedRecordMap> {
     let pages = null
-    if (pageId == config.rootNotionPageId) {
+    if (removeDashes(pageId) == config.rootNotionPageId) {
         pages = await mySiteNotion.getPage(pageId);
     } else {
         pages = await baseNotion.getPage(pageId);
@@ -74,5 +74,9 @@ export async function getPage(pageId: string): Promise<ExtendedRecordMap> {
 }
 
 export async function search(params: SearchParams): Promise<SearchResults> {
-    return mySiteNotion.search(params);
+    return baseNotion.search(params);
+}
+
+const removeDashes = (pageId: string) => {
+    return pageId.replace(/-/g, '');
 }
