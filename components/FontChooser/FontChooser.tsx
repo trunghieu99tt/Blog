@@ -29,6 +29,12 @@ const FONT_OPTIONS: FontOption[] = [
         preview: 'The quick brown fox jumps over the lazy dog'
     },
     {
+        name: 'Spectral',
+        displayName: 'Spectral',
+        googleFont: true,
+        preview: 'The quick brown fox jumps over the lazy dog'
+    },
+    {
         name: "Space Grotesk",
         displayName: "Space Grotesk",
         googleFont: true,

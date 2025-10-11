@@ -557,7 +557,7 @@ pre[class*='language-']:after {
     color: #eb5757 !important;
     padding: 0.2em 0.4em !important;
     background: var(--bg-color-2) !important;
-    font-family: initial;
+    font-family: inherit;
 }
 
 .notion-page-icon-hero {
