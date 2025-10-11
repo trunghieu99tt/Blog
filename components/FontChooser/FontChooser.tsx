@@ -23,6 +23,18 @@ const FONT_OPTIONS: FontOption[] = [
         preview: 'The quick brown fox jumps over the lazy dog'
     },
     {
+        name: 'CMU Typewriter',
+        displayName: 'CMU Typewriter',
+        googleFont: false,
+        preview: 'The quick brown fox jumps over the lazy dog'
+    },
+    {
+        name: 'CMU Unicode Normal',
+        displayName: 'CMU Unicode Normal',
+        googleFont: false,
+        preview: 'The quick brown fox jumps over the lazy dog'
+    },
+    {
         name: 'TeX Gyre Bonum Regular',
         displayName: 'TeX Gyre Bonum',
         googleFont: false,

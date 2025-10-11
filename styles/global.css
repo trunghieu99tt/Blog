@@ -82,8 +82,55 @@ body {
 
 @font-face {
     font-family: 'CMU Serif Roman';
-    src: url('/fonts/cmunrm.ttf') format('truetype');
+    src: url('/fonts/cmu-roman.ttf') format('truetype');
     font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'CMU Serif Roman';
+    src: url('/fonts/cmu-roman-italic.ttf') format('truetype');
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'CMU Typewriter';
+    src: url('/fonts/cmu-typewriter-regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'CMU Typewriter';
+    src: url('/fonts/cmu-typewriter-light.ttf') format('truetype');
+    font-weight: lighter;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'CMU Typewriter';
+    src: url('/fonts/cmu-typewriter-bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'CMU Typewriter';
+    src: url('/fonts/cmu-typewriter-italic.ttf') format('truetype');
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'CMU Unicode Normal';
+    src: url('/fonts/cmu-normal.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'CMU Unicode Normal';
+    src: url('/fonts/cmu-normal-bold.ttf') format('truetype');
+    font-weight: bold;
     font-style: normal;
 }
 
