@@ -21,9 +21,9 @@
     --notion-max-width: 95vw;
 }
 
-.notion-text {
-    /* padding: 0.5em 2px; */
-}
+/* .notion-text {
+    padding: 0.5em 2px;
+} */
 
 .notion-asset-caption {
     text-align: center;
@@ -58,11 +58,14 @@
     white-space: unset;
     color: #1f2937;
     margin-bottom: 12px;
-    transition: color 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    display: inline-block;
 }
 
 .notion-collection-card:hover .notion-page-title-text {
-    color: #374151;
+    color: #6366f1;
+    transform: translateX(4px);
 }
 
 .notion-gallery-grid .notion-collection-card-property {
@@ -125,24 +128,72 @@
     padding: 24px;
     background: #ffffff;
     border: 1px solid rgba(229, 231, 235, 0.8);
-    overflow: visible;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     position: relative;
     cursor: pointer;
-    overflow: hidden;
+    will-change: transform, box-shadow, border-color;
+}
+
+/* Gradient overlay that appears on hover */
+.notion-collection-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.03), rgba(139, 92, 246, 0.03));
+    opacity: 0;
+    transition: opacity 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Shine effect on hover */
+.notion-collection-card::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg,
+            transparent 30%,
+            rgba(255, 255, 255, 0.1) 50%,
+            transparent 70%);
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Ensure content is above overlays */
+.notion-collection-card>* {
+    position: relative;
+    z-index: 2;
 }
 
 .notion-collection-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
-    border-color: rgba(107, 114, 128, 0.4);
-    background: #fafafa;
+    transform: translateY(-12px) scale(1.02);
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.15), 0 8px 16px rgba(99, 102, 241, 0.1);
+    border-color: rgba(99, 102, 241, 0.3);
+    background: #ffffff;
+}
+
+.notion-collection-card:hover::before {
+    opacity: 1;
+}
+
+.notion-collection-card:hover::after {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
 }
 
 .notion-collection-card:active {
-    transform: translateY(-4px);
-    transition: all 0.1s;
+    transform: translateY(-8px) scale(1.01);
+    transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
+
 
 .notion-collection-card-cover {
     display: none;
@@ -386,10 +437,21 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
 }
 
+.dark-mode .notion-collection-card::before {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(139, 92, 246, 0.08));
+}
+
+.dark-mode .notion-collection-card::after {
+    background: linear-gradient(45deg,
+            transparent 30%,
+            rgba(255, 255, 255, 0.05) 50%,
+            transparent 70%);
+}
+
 .dark-mode .notion-collection-card:hover {
-    background: #374151;
-    border-color: rgba(156, 163, 175, 0.4);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    background: #1f2937;
+    border-color: rgba(99, 102, 241, 0.5);
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4), 0 8px 16px rgba(99, 102, 241, 0.2);
 }
 
 .dark-mode .notion-gallery-grid .notion-page-title-text {
@@ -397,7 +459,7 @@
 }
 
 .dark-mode .notion-collection-card:hover .notion-page-title-text {
-    color: #e5e7eb;
+    color: #818cf8;
 }
 
 .dark-mode .notion-gallery-grid .notion-property-text {
@@ -495,6 +557,7 @@ pre[class*='language-']:after {
     color: #eb5757 !important;
     padding: 0.2em 0.4em !important;
     background: var(--bg-color-2) !important;
+    font-family: initial;
 }
 
 .notion-page-icon-hero {

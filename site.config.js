@@ -10,7 +10,7 @@ module.exports = {
     // basic site info (required)
     name: "Hieu's blogs",
     domain: 'blog.hieunt.me',
-    author: 'Elliot Nguyen',
+    author: 'Hieu Nguyen',
 
     // open graph metadata (optional)
     description:

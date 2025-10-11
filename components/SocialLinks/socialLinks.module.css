@@ -1,18 +1,20 @@
 .root {
     display: flex;
     align-items: center;
+    justify-content: center;
+    gap: 1rem;
     text-align: center;
-    color: var(--fg-color);
+    color: var(--text-primary);
 }
 
 .action {
     position: relative;
-    border-radius: 50%;
-    border: 2px solid var(--fg-color-6);
-    transition: all 300ms ease-out;
-    width: 1.5em;
-    height: 1.5em;
-    margin: 0 0 1em;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    background: var(--background);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 3rem;
+    height: 3rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -20,7 +22,8 @@
     text-decoration: none !important;
     user-select: none;
     cursor: pointer;
-    margin: 0;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
 }
 
 .action:last-child {
@@ -41,40 +44,51 @@
 }
 
 .actionBg svg {
-    width: 50%;
-    height: 50%;
-    fill: var(--fg-color-6);
+    width: 1.25rem;
+    height: 1.25rem;
+    fill: var(--text-secondary);
+    transition: all 0.2s ease;
+    z-index: 2;
+    position: relative;
 }
 
 .actionBgPane {
-    transition: all 300ms ease-out;
-    border-radius: 50%;
-    width: 0;
-    height: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: var(--radius-lg);
+    opacity: 0;
+    transition: all 0.2s ease;
+    transform: scale(0.8);
 }
 
 .action:hover {
-    transition: all 100ms ease-out;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: var(--shadow-lg);
+    border-color: transparent;
 }
 
 .action:hover .actionBgPane {
-    width: 100%;
-    height: 100%;
-    transition: all 100ms ease-out;
+    opacity: 1;
+    transform: scale(1);
 }
 
 .action:hover svg {
-    transition: fill 100ms ease-out;
-    fill: var(--bg-color);
+    fill: white;
+    transform: scale(1.1);
 }
 
-:global(.dark-mode) .action:hover svg {
-    fill: var(--fg-color);
+.action:active {
+    transform: translateY(0) scale(1.02);
+    transition: all 0.1s ease;
 }
 
 .facebook .actionBgPane {
     background: #3b5998;
 }
+
 .facebook:hover {
     border-color: #3b5998;
 }
@@ -82,6 +96,7 @@
 .twitter .actionBgPane {
     background: #2795e9;
 }
+
 .twitter:hover {
     border-color: #2795e9;
 }
@@ -89,20 +104,23 @@
 .linkedin .actionBgPane {
     background: #0077b5;
 }
+
 .linkedin:hover {
     border-color: #0077b5;
 }
 
 .github .actionBgPane {
-    background: #c9510c;
+    background: linear-gradient(135deg, #333, #24292e);
 }
-.github:hover {
-    border-color: #c9510c;
+
+.linkedin .actionBgPane {
+    background: linear-gradient(135deg, #0077b5, #005885);
 }
 
 .medium .actionBgPane {
     background: #00ab6c;
 }
+
 .medium:hover {
     border-color: #00ab6c;
 }
@@ -110,18 +128,42 @@
 .email .actionBgPane {
     background: #777;
 }
+
 .email:hover {
     border-color: #777;
 }
 
+/* Dark mode support */
+.dark-mode .action {
+    background: var(--dark-background-secondary);
+    border-color: var(--dark-border-color);
+}
+
+.dark-mode .actionBg svg {
+    fill: var(--dark-text-secondary);
+}
+
+.dark-mode .action:hover {
+    background: var(--dark-background-tertiary);
+    box-shadow: var(--shadow-xl);
+}
+
 @media only screen and (max-width: 768px) {
-    .links {
-        position: relative;
-        left: 0.5em;
-        flex-wrap: wrap;
+    .root {
+        gap: 0.75rem;
     }
 
-    .action:last-child {
-        margin-right: 1em;
+    .action {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+
+    .actionBg svg {
+        width: 1rem;
+        height: 1rem;
+    }
+
+    .action:hover {
+        transform: translateY(-1px) scale(1.02);
     }
 }

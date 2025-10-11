@@ -38,7 +38,6 @@
     font-size: 2em;
     display: inline-flex;
     padding: 0.25em;
-    margin-right: 1vw;
     transition: color 250ms ease-out;
 }
 
