@@ -1,22 +1,25 @@
 // Utility functions for interaction handling
 
+import { api } from "./config";
+
 export interface InteractionCounts {
     likes: number;
     shares: number;
+    remaining: number;
 }
 
 export async function getInteractionCounts(
     postId: string
 ): Promise<InteractionCounts> {
     try {
-        const response = await fetch(`/api/interactions/${postId}`);
+        const response = await fetch(`${api.interactions}/${postId}`);
         if (response.ok) {
-            return await response.json();
+            return response.json();
         }
         throw new Error('Failed to fetch interaction counts');
     } catch (error) {
         console.error('Error fetching interaction counts:', error);
-        return { likes: 0, shares: 0 };
+        return { likes: 0, shares: 0, remaining: 0 };
     }
 }
 
@@ -24,7 +27,7 @@ export async function incrementLike(
     postId: string
 ): Promise<InteractionCounts> {
     try {
-        const response = await fetch(`/api/interactions/${postId}`, {
+        const response = await fetch(`${api.interactions}/${postId}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

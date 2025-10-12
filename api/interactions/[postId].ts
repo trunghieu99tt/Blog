@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import redis from '../../../lib/redis';
+import redis from '../../lib/redis';
 
 // Response types
 interface InteractionResponse {
