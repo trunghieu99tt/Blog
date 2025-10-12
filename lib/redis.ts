@@ -1,6 +1,6 @@
-import { createClient, RedisClientType } from 'redis';
+import { createClient } from 'redis';
 
-const redis: RedisClientType = createClient({
+const redis = createClient({
     url: process.env.REDIS_URL || process.env.KV_REST_API_URL,
     socket: {
         reconnectStrategy: (retries: number) => {
