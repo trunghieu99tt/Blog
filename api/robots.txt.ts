@@ -1,22 +1,22 @@
-import { NextApiRequest, NextApiResponse } from 'next'
+import { NextApiRequest, NextApiResponse } from 'next';
 
-import { host } from '../lib/config'
+import { host } from '../lib/config';
 
 export default async (
-  req: NextApiRequest,
-  res: NextApiResponse
+    req: NextApiRequest,
+    res: NextApiResponse
 ): Promise<void> => {
-  if (req.method !== 'GET') {
-    return res.status(405).send({ error: 'method not allowed' })
-  }
+    if (req.method !== 'GET') {
+        return res.status(405).send({ error: 'method not allowed' });
+    }
 
-  // cache robots.txt for up to 60 seconds
-  res.setHeader(
-    'Cache-Control',
-    'public, s-maxage=60, max-age=60, stale-while-revalidate=60'
-  )
-  res.setHeader('Content-Type', 'text/plain')
-  res.write(`User-agent: *
+    // cache robots.txt for up to 60 seconds
+    res.setHeader(
+        'Cache-Control',
+        'public, s-maxage=60, max-age=60, stale-while-revalidate=60'
+    );
+    res.setHeader('Content-Type', 'text/plain');
+    res.write(`User-agent: *
 Allow: /
 
 # Explicitly allow Facebook's external hit crawler
@@ -41,6 +41,6 @@ User-agent: facebookcatalog
 Allow: /
 
 Sitemap: ${host}/api/sitemap.xml
-`)
-  res.end()
-}
+`);
+    res.end();
+};

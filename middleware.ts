@@ -5,14 +5,14 @@ export function middleware(req: NextRequest) {
 
     // Handle Facebook external hit crawler by removing Range header
     if (
-        req.headers.get("User-Agent")?.includes("facebookexternalhit") &&
-        req.headers.has("Range")
+        req.headers.get('User-Agent')?.includes('facebookexternalhit') &&
+        req.headers.has('Range')
     ) {
-        headers.delete("Range");
+        headers.delete('Range');
     }
 
     return NextResponse.next({
-        request: { headers },
+        request: { headers }
     });
 }
 
@@ -26,6 +26,6 @@ export const config = {
          * - _next/image (image optimization files)
          * - favicon.ico (favicon file)
          */
-        '/((?!api|_next/static|_next/image|favicon.ico).*)',
-    ],
+        '/((?!api|_next/static|_next/image|favicon.ico).*)'
+    ]
 };

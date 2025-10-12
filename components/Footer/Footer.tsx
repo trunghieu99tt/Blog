@@ -31,7 +31,6 @@ const Footer: React.FC = () => {
             <div className={styles.social}>
                 <SocialLinks />
             </div>
-
         </footer>
     );
 };

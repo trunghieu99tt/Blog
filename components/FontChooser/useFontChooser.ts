@@ -4,7 +4,8 @@ const STORAGE_KEY = 'selectedFontFamily';
 const DEFAULT_FONT = 'CMU Serif Roman';
 
 export function useFontChooser() {
-    const [selectedFont, setSelectedFont] = React.useState<string>(DEFAULT_FONT);
+    const [selectedFont, setSelectedFont] =
+        React.useState<string>(DEFAULT_FONT);
     const [hasMounted, setHasMounted] = React.useState(false);
 
     // Load saved font from localStorage on mount
@@ -16,7 +17,10 @@ export function useFontChooser() {
                 setSelectedFont(savedFont);
             }
         } catch (error) {
-            console.warn('Could not load font preference from localStorage:', error);
+            console.warn(
+                'Could not load font preference from localStorage:',
+                error
+            );
         }
     }, []);
 
@@ -27,7 +31,10 @@ export function useFontChooser() {
         try {
             localStorage.setItem(STORAGE_KEY, fontFamily);
         } catch (error) {
-            console.warn('Could not save font preference to localStorage:', error);
+            console.warn(
+                'Could not save font preference to localStorage:',
+                error
+            );
         }
     }, []);
 

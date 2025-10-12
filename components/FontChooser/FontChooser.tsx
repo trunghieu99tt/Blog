@@ -47,14 +47,14 @@ const FONT_OPTIONS: FontOption[] = [
         preview: 'The quick brown fox jumps over the lazy dog'
     },
     {
-        name: "Space Grotesk",
-        displayName: "Space Grotesk",
+        name: 'Space Grotesk',
+        displayName: 'Space Grotesk',
         googleFont: true,
         preview: 'The quick brown fox jumps over the lazy dog'
     },
     {
-        name: "Source Code Pro",
-        displayName: "Source Code Pro",
+        name: 'Source Code Pro',
+        displayName: 'Source Code Pro',
         googleFont: true,
         preview: 'The quick brown fox jumps over the lazy dog'
     },
@@ -75,13 +75,18 @@ const FONT_OPTIONS: FontOption[] = [
         displayName: 'Roboto',
         googleFont: true,
         preview: 'The quick brown fox jumps over the lazy dog'
-    },
+    }
 ];
 
 const STORAGE_KEY = 'selectedFontFamily';
 
-const FontChooser: React.FC<FontChooserProps> = ({ onFontChange, className, variant = 'standalone' }) => {
-    const [selectedFont, setSelectedFont] = React.useState<string>('CMU Serif Roman');
+const FontChooser: React.FC<FontChooserProps> = ({
+    onFontChange,
+    className,
+    variant = 'standalone'
+}) => {
+    const [selectedFont, setSelectedFont] =
+        React.useState<string>('CMU Serif Roman');
     const [isOpen, setIsOpen] = React.useState(false);
     const [hasMounted, setHasMounted] = React.useState(false);
     const dropdownRef = React.useRef<HTMLDivElement>(null);
@@ -98,14 +103,20 @@ const FontChooser: React.FC<FontChooserProps> = ({ onFontChange, className, vari
                 }
             }
         } catch (error) {
-            console.warn('Could not load font preference from localStorage:', error);
+            console.warn(
+                'Could not load font preference from localStorage:',
+                error
+            );
         }
     }, [onFontChange]);
 
     // Close dropdown when clicking outside
     React.useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(event.target as Node)
+            ) {
                 setIsOpen(false);
             }
         };
@@ -119,24 +130,32 @@ const FontChooser: React.FC<FontChooserProps> = ({ onFontChange, className, vari
         };
     }, [isOpen]);
 
-    const handleFontSelect = React.useCallback((fontName: string) => {
-        setSelectedFont(fontName);
-        setIsOpen(false);
+    const handleFontSelect = React.useCallback(
+        (fontName: string) => {
+            setSelectedFont(fontName);
+            setIsOpen(false);
 
-        // Save to localStorage
-        try {
-            localStorage.setItem(STORAGE_KEY, fontName);
-        } catch (error) {
-            console.warn('Could not save font preference to localStorage:', error);
-        }
+            // Save to localStorage
+            try {
+                localStorage.setItem(STORAGE_KEY, fontName);
+            } catch (error) {
+                console.warn(
+                    'Could not save font preference to localStorage:',
+                    error
+                );
+            }
 
-        // Notify parent component
-        if (onFontChange) {
-            onFontChange(fontName);
-        }
-    }, [onFontChange]);
+            // Notify parent component
+            if (onFontChange) {
+                onFontChange(fontName);
+            }
+        },
+        [onFontChange]
+    );
 
-    const selectedFontOption = FONT_OPTIONS.find(font => font.name === selectedFont);
+    const selectedFontOption = FONT_OPTIONS.find(
+        (font) => font.name === selectedFont
+    );
 
     // Don't render until mounted to prevent hydration mismatches
     if (!hasMounted) {
@@ -144,26 +163,41 @@ const FontChooser: React.FC<FontChooserProps> = ({ onFontChange, className, vari
     }
 
     return (
-        <div className={`${styles.fontChooser} ${variant === 'inline' ? styles.inline : ''} ${className || ''}`} ref={dropdownRef}>
+        <div
+            className={`${styles.fontChooser} ${
+                variant === 'inline' ? styles.inline : ''
+            } ${className || ''}`}
+            ref={dropdownRef}
+        >
             <button
                 className={styles.fontToggle}
                 onClick={() => setIsOpen(!isOpen)}
-                aria-label="Choose font family"
+                aria-label='Choose font family'
                 aria-expanded={isOpen}
             >
-                <span>Font: {selectedFontOption?.displayName || selectedFont}</span>
-                <span className={`${styles.chevron} ${isOpen ? styles.open : ''}`}>▼</span>
+                <span>
+                    Font: {selectedFontOption?.displayName || selectedFont}
+                </span>
+                <span
+                    className={`${styles.chevron} ${isOpen ? styles.open : ''}`}
+                >
+                    ▼
+                </span>
             </button>
 
             {isOpen && (
                 <div className={styles.fontDropdown}>
-                    <div className={styles.fontList} role="listbox">
+                    <div className={styles.fontList} role='listbox'>
                         {FONT_OPTIONS.map((font) => (
                             <button
                                 key={font.name}
-                                className={`${styles.fontOption} ${selectedFont === font.name ? styles.selected : ''}`}
+                                className={`${styles.fontOption} ${
+                                    selectedFont === font.name
+                                        ? styles.selected
+                                        : ''
+                                }`}
                                 onClick={() => handleFontSelect(font.name)}
-                                role="option"
+                                role='option'
                                 aria-selected={selectedFont === font.name}
                                 style={{
                                     fontFamily: font.googleFont
@@ -180,7 +214,9 @@ const FontChooser: React.FC<FontChooserProps> = ({ onFontChange, className, vari
                                     </div>
                                 </div>
                                 {selectedFont === font.name && (
-                                    <IoCheckmarkSharp className={styles.checkmark} />
+                                    <IoCheckmarkSharp
+                                        className={styles.checkmark}
+                                    />
                                 )}
                             </button>
                         ))}

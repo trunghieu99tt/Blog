@@ -5,7 +5,9 @@ export interface InteractionCounts {
     shares: number;
 }
 
-export async function getInteractionCounts(postId: string): Promise<InteractionCounts> {
+export async function getInteractionCounts(
+    postId: string
+): Promise<InteractionCounts> {
     try {
         const response = await fetch(`/api/interactions/${postId}`);
         if (response.ok) {
@@ -18,14 +20,16 @@ export async function getInteractionCounts(postId: string): Promise<InteractionC
     }
 }
 
-export async function incrementLike(postId: string): Promise<InteractionCounts> {
+export async function incrementLike(
+    postId: string
+): Promise<InteractionCounts> {
     try {
         const response = await fetch(`/api/interactions/${postId}`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ type: 'like' }),
+            body: JSON.stringify({ type: 'like' })
         });
 
         if (response.ok) {
@@ -38,14 +42,16 @@ export async function incrementLike(postId: string): Promise<InteractionCounts> 
     }
 }
 
-export async function incrementShare(postId: string): Promise<InteractionCounts> {
+export async function incrementShare(
+    postId: string
+): Promise<InteractionCounts> {
     try {
         const response = await fetch(`/api/interactions/${postId}`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ type: 'share' }),
+            body: JSON.stringify({ type: 'share' })
         });
 
         if (response.ok) {

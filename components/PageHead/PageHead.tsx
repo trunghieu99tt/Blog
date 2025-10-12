@@ -2,7 +2,7 @@ import Head from 'next/head';
 import * as React from 'react';
 import * as types from 'lib/types';
 import * as config from 'lib/config';
-import Script from 'next/script'
+import Script from 'next/script';
 
 interface Props extends types.PageProps {
     title?: string;
@@ -37,7 +37,10 @@ const PageHead: React.FC<Props> = ({
             {/* Use socialDescription if available, otherwise fallback to site.description */}
             {(socialDescription || site?.description) && (
                 <>
-                    <meta name='description' content={socialDescription || site.description} />
+                    <meta
+                        name='description'
+                        content={socialDescription || site.description}
+                    />
                     <meta
                         property='og:description'
                         content={socialDescription || site.description}
@@ -68,7 +71,10 @@ const PageHead: React.FC<Props> = ({
             <title>{title}</title>
             {title && <meta property='og:title' content={title} />}
 
-            <meta property='og:type' content={isBlogPost ? 'article' : 'website'} />
+            <meta
+                property='og:type'
+                content={isBlogPost ? 'article' : 'website'}
+            />
 
             <script
                 defer

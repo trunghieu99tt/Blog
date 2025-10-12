@@ -80,9 +80,12 @@ export const CustomFont: React.FC<CustomFontProps> = ({ site, fontFamily }) => {
         // Define font-specific sizes to normalize appearance
         const getFontSize = (fontFamily: string): string => {
             switch (fontFamily) {
-                case 'CMU Serif Roman': case 'CMU Typewriter': case 'CMU Unicode Normal':
+                case 'CMU Serif Roman':
+                case 'CMU Typewriter':
+                case 'CMU Unicode Normal':
                     return '102.5%';
-                case 'Source Code Pro': case 'TeX Gyre Bonum Regular':
+                case 'Source Code Pro':
+                case 'TeX Gyre Bonum Regular':
                     return '90%';
                 default:
                     return '100%';

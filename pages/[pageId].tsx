@@ -20,9 +20,10 @@ export const getStaticProps = async (context) => {
         }
 
         const allPosts = await getAllPages();
-        const post = allPosts.find((post: Block) => {
-            return post?.id === parsePageId(rawPageId);
-        }) || null;
+        const post =
+            allPosts.find((post: Block) => {
+                return post?.id === parsePageId(rawPageId);
+            }) || null;
         const props = await resolveNotionPage(domain, rawPageId);
 
         return {

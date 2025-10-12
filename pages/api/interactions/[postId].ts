@@ -48,7 +48,7 @@ function getClientId(req: NextApiRequest): string {
     let hash = 0;
     for (let i = 0; i < userAgent.length; i++) {
         const char = userAgent.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
+        hash = (hash << 5) - hash + char;
         hash = hash & hash; // Convert to 32bit integer
     }
 
@@ -59,7 +59,7 @@ function getClientId(req: NextApiRequest): string {
 
 /**
  * API handler for post interactions (likes and shares)
- * 
+ *
  * GET /api/interactions/[postId] - Get interaction counts
  * POST /api/interactions/[postId] - Increment like or share
  */
@@ -87,11 +87,16 @@ export default async function handler(
                 // Check how many likes this user has already given to this post
                 const userLikesKey = `user_likes:${postId}:${clientId}`;
                 const userLikesCount = await redis.get(userLikesKey);
-                const currentUserLikes = parseInt(String(userLikesCount || '0'));
+                const currentUserLikes = parseInt(
+                    String(userLikesCount || '0')
+                );
 
                 // Enforce max 5 likes per user per post
                 const requestedCount = Math.max(1, Math.min(count || 1, 5));
-                const allowedCount = Math.max(0, Math.min(requestedCount, 5 - currentUserLikes));
+                const allowedCount = Math.max(
+                    0,
+                    Math.min(requestedCount, 5 - currentUserLikes)
+                );
 
                 if (allowedCount === 0) {
                     const likes = await redis.get(`likes:${postId}`);
@@ -110,7 +115,10 @@ export default async function handler(
                 await redis.expire(userLikesKey, 86400); // 24 hours
 
                 // Increment global like count
-                const newLikes = await redis.incrBy(`likes:${postId}`, allowedCount);
+                const newLikes = await redis.incrBy(
+                    `likes:${postId}`,
+                    allowedCount
+                );
                 const shares = await redis.get(`shares:${postId}`);
 
                 return res.json({
@@ -119,12 +127,13 @@ export default async function handler(
                     success: true,
                     remaining: 5 - (currentUserLikes + allowedCount)
                 });
-            }
-            else if (type === 'share') {
+            } else if (type === 'share') {
                 // Rate limiting for shares (max 10 per user per post per 24h)
                 const userSharesKey = `user_shares:${postId}:${clientId}`;
                 const userSharesCount = await redis.get(userSharesKey);
-                const currentUserShares = parseInt(String(userSharesCount || '0'));
+                const currentUserShares = parseInt(
+                    String(userSharesCount || '0')
+                );
 
                 if (currentUserShares >= 10) {
                     const likes = await redis.get(`likes:${postId}`);
@@ -150,16 +159,14 @@ export default async function handler(
                     shares: parseInt(String(newShares)),
                     success: true
                 });
-            }
-            else {
+            } else {
                 return res.status(400).json({
                     error: 'Invalid interaction type',
                     likes: 0,
                     shares: 0
                 });
             }
-        }
-        else if (req.method === 'GET') {
+        } else if (req.method === 'GET') {
             const clientId = getClientId(req);
 
             // Fetch global counts
@@ -169,15 +176,17 @@ export default async function handler(
             // Fetch user's remaining likes
             const userLikesKey = `user_likes:${postId}:${clientId}`;
             const userLikesCount = await redis.get(userLikesKey);
-            const remaining = Math.max(0, 5 - parseInt(String(userLikesCount || '0')));
+            const remaining = Math.max(
+                0,
+                5 - parseInt(String(userLikesCount || '0'))
+            );
 
             return res.json({
                 likes: parseInt(String(likes || '0')),
                 shares: parseInt(String(shares || '0')),
                 remaining
             });
-        }
-        else {
+        } else {
             res.setHeader('Allow', ['GET', 'POST']);
             return res.status(405).json({
                 error: 'Method not allowed',
@@ -187,14 +196,17 @@ export default async function handler(
         }
     } catch (error) {
         console.error('Redis error:', error);
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        const errorMessage =
+            error instanceof Error ? error.message : 'Unknown error';
 
         return res.status(500).json({
             error: 'Failed to update interactions',
             likes: 0,
             shares: 0,
-            details: process.env.NODE_ENV === 'development' ? errorMessage : undefined
+            details:
+                process.env.NODE_ENV === 'development'
+                    ? errorMessage
+                    : undefined
         });
     }
 }
-

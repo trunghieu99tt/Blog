@@ -1,30 +1,33 @@
 import { NotionAPI } from 'notion-client';
-import { Block, ExtendedRecordMap, SearchParams, SearchResults } from 'notion-types';
+import {
+    Block,
+    ExtendedRecordMap,
+    SearchParams,
+    SearchResults
+} from 'notion-types';
 import { getPreviewImages } from './get-preview-images';
 import { mapNotionImageUrl } from './map-image-url';
 
 import * as config from 'lib/config';
 
-
 export const mySiteNotion = new NotionAPI({
     apiBaseUrl: process.env.NOTION_API_BASE_URL
 });
 
-export const baseNotion = new NotionAPI({
-})
+export const baseNotion = new NotionAPI({});
 
 export const getAllPages = async (): Promise<Block[]> => {
     try {
         const response = await mySiteNotion.getPage(config.rootNotionPageId);
         const blocks = response?.block;
-        return Object.values(blocks).map(block => block.value)
+        return Object.values(blocks).map((block) => block.value);
     } catch (error) {
-        return []
+        return [];
     }
 };
 
 export async function getPage(pageId: string): Promise<ExtendedRecordMap> {
-    let pages = null
+    let pages = null;
     if (removeDashes(pageId) == config.rootNotionPageId) {
         pages = await mySiteNotion.getPage(pageId);
     } else {
@@ -79,4 +82,4 @@ export async function search(params: SearchParams): Promise<SearchResults> {
 
 const removeDashes = (pageId: string) => {
     return pageId.replace(/-/g, '');
-}
+};

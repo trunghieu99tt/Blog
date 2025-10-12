@@ -74,14 +74,8 @@ export default class ReactUtterances extends React.Component<
     }
 
     componentDidMount(): void {
-        const {
-            repo,
-            issueMap,
-            issueTerm,
-            issueNumber,
-            label,
-            theme
-        } = this.props;
+        const { repo, issueMap, issueTerm, issueNumber, label, theme } =
+            this.props;
         const scriptElement = document.createElement('script');
         scriptElement.src = 'https://utteranc.es/client.js';
         scriptElement.async = true;

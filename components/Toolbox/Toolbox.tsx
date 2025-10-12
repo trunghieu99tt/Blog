@@ -1,7 +1,12 @@
 import * as React from 'react';
 
 // icons
-import { IoSunnyOutline, IoMoonSharp, IoSettingsOutline, IoClose } from 'react-icons/io5';
+import {
+    IoSunnyOutline,
+    IoMoonSharp,
+    IoSettingsOutline,
+    IoClose
+} from 'react-icons/io5';
 
 // components
 import FontChooser from '../FontChooser/FontChooser';
@@ -33,7 +38,9 @@ const Toolbox: React.FC<ToolboxProps> = ({
         setHasMounted(true);
         // Hide any existing Calendly badge widgets since we're using our own button
         const hideBadgeWidget = () => {
-            const badgeWidget = document.querySelector('.calendly-badge-widget');
+            const badgeWidget = document.querySelector(
+                '.calendly-badge-widget'
+            );
             if (badgeWidget) {
                 (badgeWidget as HTMLElement).style.display = 'none';
             }
@@ -47,7 +54,10 @@ const Toolbox: React.FC<ToolboxProps> = ({
     // Close toolbox when clicking outside
     React.useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (toolboxRef.current && !toolboxRef.current.contains(event.target as Node)) {
+            if (
+                toolboxRef.current &&
+                !toolboxRef.current.contains(event.target as Node)
+            ) {
                 setIsExpanded(false);
             }
         };
@@ -72,14 +82,16 @@ const Toolbox: React.FC<ToolboxProps> = ({
     );
 
     const toggleExpanded = React.useCallback(() => {
-        setIsExpanded(prev => !prev);
+        setIsExpanded((prev) => !prev);
     }, []);
 
     const handleCalendlyClick = React.useCallback((e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
         if (typeof window !== 'undefined' && (window as any).Calendly) {
-            (window as any).Calendly.showPopupWidget('https://calendly.com/ricky_nguyen/30min');
+            (window as any).Calendly.showPopupWidget(
+                'https://calendly.com/ricky_nguyen/30min'
+            );
         }
     }, []);
 
@@ -92,7 +104,9 @@ const Toolbox: React.FC<ToolboxProps> = ({
         <div
             ref={toolboxRef}
             className={`${styles.toolbox} ${className || ''}`}
-            style={{ fontFamily: selectedFont ? `"${selectedFont}"` : undefined }}
+            style={{
+                fontFamily: selectedFont ? `"${selectedFont}"` : undefined
+            }}
         >
             {/* Floating Toggle Button */}
             <button
@@ -120,10 +134,16 @@ const Toolbox: React.FC<ToolboxProps> = ({
                                 className={styles.themeToggle}
                                 onClick={toggleDarkModeCb}
                                 title='Toggle dark mode'
-                                aria-label={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
+                                aria-label={`Switch to ${
+                                    isDarkMode ? 'light' : 'dark'
+                                } mode`}
                             >
                                 <span className={styles.themeIcon}>
-                                    {isDarkMode ? <IoMoonSharp /> : <IoSunnyOutline />}
+                                    {isDarkMode ? (
+                                        <IoMoonSharp />
+                                    ) : (
+                                        <IoSunnyOutline />
+                                    )}
                                 </span>
                                 <span className={styles.themeText}>
                                     {isDarkMode ? 'Dark' : 'Light'}
@@ -135,18 +155,23 @@ const Toolbox: React.FC<ToolboxProps> = ({
                         <div className={styles.toolItem}>
                             <label className={styles.toolLabel}>Font</label>
                             <div className={styles.fontWrapper}>
-                                <FontChooser onFontChange={onFontChange} variant="inline" />
+                                <FontChooser
+                                    onFontChange={onFontChange}
+                                    variant='inline'
+                                />
                             </div>
                         </div>
 
                         {/* Calendly Button */}
                         <div className={styles.toolItem}>
-                            <label className={styles.toolLabel}>Let's Chat</label>
+                            <label className={styles.toolLabel}>
+                                Let's Chat
+                            </label>
                             <button
                                 className={styles.calendlyButton}
                                 onClick={handleCalendlyClick}
-                                title="Schedule a coffee chat"
-                                aria-label="Schedule a coffee chat"
+                                title='Schedule a coffee chat'
+                                aria-label='Schedule a coffee chat'
                             >
                                 ☕ Coffee talk with me!
                             </button>

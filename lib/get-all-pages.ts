@@ -17,7 +17,7 @@ export async function getAllPagesImpl(
     const pageMap = await getAllPagesInSpace(
         rootNotionPageId,
         rootNotionSpaceId,
-        getPage,
+        getPage
     );
 
     const canonicalPageMap = Object.keys(pageMap).reduce(
@@ -30,7 +30,6 @@ export async function getAllPagesImpl(
             const canonicalPageId = getCanonicalPageId(pageId, recordMap, {
                 uuid
             });
-
 
             if (canonicalPageId != null && map[canonicalPageId]) {
                 console.error(
@@ -50,7 +49,6 @@ export async function getAllPagesImpl(
         },
         {}
     );
-
 
     return {
         pageMap,
