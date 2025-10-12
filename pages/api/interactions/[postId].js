@@ -1,29 +1,13 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import redis from '../../lib/redis';
-
-// Response types
-interface InteractionResponse {
-    likes: number;
-    shares: number;
-    remaining?: number;
-    success?: boolean;
-    error?: string;
-    details?: string;
-}
-
-interface InteractionRequestBody {
-    type: 'like' | 'share';
-    count?: number;
-}
+import redis from '../../../lib/redis';
 
 /**
  * Get client identifier based on IP address and User-Agent
  * This creates a unique identifier for rate limiting
  */
-function getClientId(req: NextApiRequest): string {
+function getClientId(req) {
     // Get IP address
     const forwarded = req.headers['x-forwarded-for'];
-    let ip: string;
+    let ip;
 
     if (typeof forwarded === 'string') {
         ip = forwarded.split(',')[0].trim();
@@ -63,18 +47,11 @@ function getClientId(req: NextApiRequest): string {
  * GET /api/interactions/[postId] - Get interaction counts
  * POST /api/interactions/[postId] - Increment like or share
  */
-export default async function handler(
-    req: NextApiRequest,
-    res: NextApiResponse<InteractionResponse>
-): Promise<void> {
+async function handler(req, res) {
     const { postId } = req.query;
-
-    // Debug logging
-    console.log(`[API] ${req.method} /api/interactions/${postId}`);
 
     // Validate postId
     if (!postId || typeof postId !== 'string') {
-        console.error(`[API] Invalid postId:`, postId);
         return res.status(400).json({
             error: 'Post ID is required',
             likes: 0,
@@ -83,18 +60,8 @@ export default async function handler(
     }
 
     try {
-        // Check if Redis is connected
-        if (!redis.isReady) {
-            console.error('[API] Redis not connected');
-            return res.status(503).json({
-                error: 'Service temporarily unavailable',
-                likes: 0,
-                shares: 0
-            });
-        }
-
         if (req.method === 'POST') {
-            const { type, count } = req.body as InteractionRequestBody;
+            const { type, count } = req.body;
             const clientId = getClientId(req);
 
             if (type === 'like') {
@@ -211,4 +178,6 @@ export default async function handler(
         });
     }
 }
+
+export default handler;
 
