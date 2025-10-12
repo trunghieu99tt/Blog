@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import redis from '../../lib/redis';
+
+const redis = require('../../lib/redis');
 
 // Response types
 interface InteractionResponse {
