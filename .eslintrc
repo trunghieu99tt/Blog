@@ -14,7 +14,10 @@
   },
   "overrides": [
     {
-      "files": ["**/*.js", "**/*.jsx"],
+      "files": [
+        "**/*.js",
+        "**/*.jsx"
+      ],
       "parser": "babel-eslint",
       "extends": [
         "standard",
@@ -23,7 +26,9 @@
         "prettier/standard",
         "prettier/react"
       ],
-      "env": { "node": true },
+      "env": {
+        "node": true
+      },
       "rules": {
         "space-before-function-paren": 0,
         "react/prop-types": 0,
@@ -35,9 +40,14 @@
       }
     },
     {
-      "files": ["**/*.ts", "**/*.tsx"],
+      "files": [
+        "**/*.ts",
+        "**/*.tsx"
+      ],
       "parser": "@typescript-eslint/parser",
-      "plugins": ["@typescript-eslint"],
+      "plugins": [
+        "@typescript-eslint"
+      ],
       "extends": [
         "plugin:@typescript-eslint/recommended",
         "standard",
@@ -46,7 +56,10 @@
         "prettier/standard",
         "prettier/react"
       ],
-      "env": { "browser": true, "node": true },
+      "env": {
+        "browser": true,
+        "node": true
+      },
       "rules": {
         "@typescript-eslint/no-explicit-any": 0,
         "@typescript-eslint/explicit-module-boundary-types": 0,

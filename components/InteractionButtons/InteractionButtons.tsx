@@ -3,6 +3,7 @@ import styles from './interactionButtons.module.css';
 import { formatCount } from '../../lib/interactions';
 import { useFireworks } from './useFireworks';
 import ShareMenu from './ShareMenu';
+import { api } from '../../lib/config';
 
 interface InteractionButtonsProps {
     postId: string;
@@ -60,7 +61,7 @@ export default function InteractionButtons({ postId, postTitle, postUrl }: Inter
     const sendLikesToServer = useCallback(async (count: number) => {
         try {
             // Send multiple likes in a single batch
-            const response = await fetch(`/api/interactions/${postId}`, {
+            const response = await fetch(`${api.interactions}/${postId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

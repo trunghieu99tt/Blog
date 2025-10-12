@@ -106,7 +106,8 @@ export const apiBaseUrl = `${host}/api`;
 
 export const api = {
     createPreviewImage: `${apiBaseUrl}/create-preview-image`,
-    searchNotion: `${apiBaseUrl}/search-notion`
+    searchNotion: `${apiBaseUrl}/search-notion`,
+    interactions: `${apiBaseUrl}/interactions`
 };
 
 // ----------------------------------------------------------------------------
@@ -115,8 +116,8 @@ export const fathomId = isDev ? null : process.env.NEXT_PUBLIC_FATHOM_ID;
 
 export const fathomConfig = fathomId
     ? {
-          excludedDomains: ['localhost', 'localhost:3000']
-      }
+        excludedDomains: ['localhost', 'localhost:3000']
+    }
     : undefined;
 
 const defaultEnvValueForPreviewImageSupport =
