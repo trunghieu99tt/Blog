@@ -5,7 +5,13 @@ import useDarkMode from 'use-dark-mode';
 import BodyClassName from 'react-body-classname';
 import { ExtendedRecordMap } from 'notion-types';
 import * as types from '../../lib/types';
-import { extractPostsFromRecordMap, getMonthGroups, getAllTags, getAllTagsWithColors, BlogPost, BlogTag } from '../../lib/extract-posts-from-recordmap';
+import {
+    extractPostsFromRecordMap,
+    getMonthGroups,
+    getAllTags,
+    getAllTagsWithColors,
+    BlogPost
+} from '../../lib/extract-posts-from-recordmap';
 import { SearchBar } from '../SearchBar';
 import { Sidebar } from '../Sidebar';
 import Footer from '../Footer';
@@ -13,42 +19,41 @@ import Toolbox from '../Toolbox';
 import { CustomFont } from '../CustomFont';
 import { useFontChooser } from '../FontChooser/useFontChooser';
 import SocialLinks from '../SocialLinks';
-import * as config from '../../lib/config';
 import styles from './customHomePage.module.css';
 
 // Notion color mapping using exact CSS variables from react-notion-x
 const getTagBackgroundColor = (color: string): string => {
     const colorMap: { [key: string]: string } = {
-        'default': 'var(--notion-item-default)',
-        'gray': 'var(--notion-gray_background)',
-        'brown': 'var(--notion-brown_background)',
-        'orange': 'var(--notion-orange_background)',
-        'yellow': 'var(--notion-yellow_background)',
-        'green': 'var(--notion-item-green)',
-        'blue': 'var(--notion-blue_background)',
-        'purple': 'var(--notion-purple_background)',
-        'pink': 'var(--notion-pink_background)',
-        'red': 'var(--notion-red_background)',
-        'teal': 'var(--notion-teal_background)'
+        default: 'var(--notion-item-default)',
+        gray: 'var(--notion-gray_background)',
+        brown: 'var(--notion-brown_background)',
+        orange: 'var(--notion-orange_background)',
+        yellow: 'var(--notion-yellow_background)',
+        green: 'var(--notion-item-green)',
+        blue: 'var(--notion-blue_background)',
+        purple: 'var(--notion-purple_background)',
+        pink: 'var(--notion-pink_background)',
+        red: 'var(--notion-red_background)',
+        teal: 'var(--notion-teal_background)'
     };
-    return colorMap[color] || colorMap['default'];
+    return colorMap[color] || colorMap.default;
 };
 
 const getTagTextColor = (color: string): string => {
     const colorMap: { [key: string]: string } = {
-        'default': 'var(--notion-item-text-default)',
-        'gray': 'var(--notion-item-text-gray)',
-        'brown': 'var(--notion-item-text-brown)',
-        'orange': 'var(--notion-item-text-orange)',
-        'yellow': 'var(--notion-item-text-yellow)',
-        'green': 'var(--notion-item-text-green)',
-        'blue': 'var(--notion-item-text-blue)',
-        'purple': 'var(--notion-item-text-purple)',
-        'pink': 'var(--notion-item-text-pink)',
-        'red': 'var(--notion-item-text-red)',
-        'teal': 'var(--notion-teal)'
+        default: 'var(--notion-item-text-default)',
+        gray: 'var(--notion-item-text-gray)',
+        brown: 'var(--notion-item-text-brown)',
+        orange: 'var(--notion-item-text-orange)',
+        yellow: 'var(--notion-item-text-yellow)',
+        green: 'var(--notion-item-text-green)',
+        blue: 'var(--notion-item-text-blue)',
+        purple: 'var(--notion-item-text-purple)',
+        pink: 'var(--notion-item-text-pink)',
+        red: 'var(--notion-item-text-red)',
+        teal: 'var(--notion-teal)'
     };
-    return colorMap[color] || colorMap['default'];
+    return colorMap[color] || colorMap.default;
 };
 
 interface CustomHomePageProps {
@@ -56,14 +61,10 @@ interface CustomHomePageProps {
     site: types.Site;
 }
 
-interface MonthGroup {
-    month: string;
-    year: string;
-    count: number;
-    key: string;
-}
-
-export const CustomHomePage: React.FC<CustomHomePageProps> = ({ recordMap, site }) => {
+export const CustomHomePage: React.FC<CustomHomePageProps> = ({
+    recordMap,
+    site
+}) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -76,7 +77,8 @@ export const CustomHomePage: React.FC<CustomHomePageProps> = ({ recordMap, site 
     // Handle scroll to show/hide back to top button
     React.useEffect(() => {
         const handleScroll = () => {
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const scrollTop =
+                window.pageYOffset || document.documentElement.scrollTop;
             setShowBackToTop(scrollTop > 300);
         };
 
@@ -100,7 +102,10 @@ export const CustomHomePage: React.FC<CustomHomePageProps> = ({ recordMap, site 
     // Extract month groups and tags
     const monthGroups = useMemo(() => getMonthGroups(posts), [posts]);
     const allTags = useMemo(() => getAllTags(posts), [posts]);
-    const allTagsWithColors = useMemo(() => getAllTagsWithColors(posts), [posts]);
+    const allTagsWithColors = useMemo(
+        () => getAllTagsWithColors(posts),
+        [posts]
+    );
 
     // Filter posts based on search, month, and tags
     const filteredPosts = useMemo(() => {
@@ -109,7 +114,8 @@ export const CustomHomePage: React.FC<CustomHomePageProps> = ({ recordMap, site 
             if (searchQuery) {
                 const query = searchQuery.toLowerCase();
                 const matchesTitle = post.title.toLowerCase().includes(query);
-                const matchesDescription = post.description?.toLowerCase().includes(query) || false;
+                const matchesDescription =
+                    post.description?.toLowerCase().includes(query) || false;
                 if (!matchesTitle && !matchesDescription) return false;
             }
 
@@ -117,14 +123,16 @@ export const CustomHomePage: React.FC<CustomHomePageProps> = ({ recordMap, site 
             if (selectedMonth) {
                 if (!post.date) return false;
                 const date = new Date(post.date);
-                const postKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                const postKey = `${date.getFullYear()}-${String(
+                    date.getMonth() + 1
+                ).padStart(2, '0')}`;
                 if (postKey !== selectedMonth) return false;
             }
 
             // Tag filter
             if (selectedTags.length > 0) {
-                const hasSelectedTag = selectedTags.some(selectedTag => 
-                    post.tags.some(tag => tag.name === selectedTag)
+                const hasSelectedTag = selectedTags.some((selectedTag) =>
+                    post.tags.some((tag) => tag.name === selectedTag)
                 );
                 if (!hasSelectedTag) return false;
             }
@@ -148,23 +156,26 @@ export const CustomHomePage: React.FC<CustomHomePageProps> = ({ recordMap, site 
     return (
         <>
             <CustomFont site={site} fontFamily={selectedFont} />
-            <BodyClassName className="custom-home-page" />
+            <BodyClassName className='custom-home-page' />
 
-            <div className={`${styles.homePageContainer} ${darkMode.value ? 'dark-mode' : ''}`}>
-                    <header className={styles.header}>
-                        <h1 className={styles.mainTitle}>{site.name}</h1>
-                        <p className={styles.siteDescription}>{site.description}</p>
-                        
-                        <div className={styles.socialSection}>
-                            <p className={styles.socialLabel}>Connect with me:</p>
-                            <SocialLinks />
-                        </div>
-                    </header>
+            <div
+                className={`${styles.homePageContainer} ${
+                    darkMode.value ? 'dark-mode' : ''
+                }`}
+            >
+                <header className={styles.header}>
+                    <h1 className={styles.mainTitle}>{site.name}</h1>
+                    <p className={styles.siteDescription}>{site.description}</p>
 
+                    <div className={styles.socialSection}>
+                        <p className={styles.socialLabel}>Connect with me:</p>
+                        <SocialLinks />
+                    </div>
+                </header>
 
                 <div className={styles.mainContent}>
                     {isSidebarOpen && (
-                        <div 
+                        <div
                             className={styles.sidebarOverlay}
                             onClick={() => setIsSidebarOpen(false)}
                         />
@@ -173,51 +184,59 @@ export const CustomHomePage: React.FC<CustomHomePageProps> = ({ recordMap, site 
                         <div className={styles.mobileControls}>
                             <div className={styles.resultsInfo}>
                                 <p className={styles.resultsCount}>
-                                    {filteredPosts.length} post{filteredPosts.length !== 1 ? 's' : ''}
-                                    {(selectedMonth || selectedTags.length > 0 || searchQuery) && ' found'}
+                                    {filteredPosts.length} post
+                                    {filteredPosts.length !== 1 ? 's' : ''}
+                                    {(selectedMonth ||
+                                        selectedTags.length > 0 ||
+                                        searchQuery) &&
+                                        ' found'}
                                 </p>
                             </div>
-                            <button 
+                            <button
                                 className={styles.mobileFilterToggle}
                                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                             >
                                 🔍 Filters
                             </button>
                         </div>
-                        
+
                         <BlogGrid posts={filteredPosts} />
                     </main>
 
-                            <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.sidebarOpen : ''}`}>
-                                <div className={styles.sidebarHeader}>
-                                    <h3>Filters</h3>
-                                    <button 
-                                        className={styles.sidebarClose}
-                                        onClick={() => setIsSidebarOpen(false)}
-                                    >
-                                        ✕
-                                    </button>
-                                </div>
-                                <div className={styles.sidebarSearchSection}>
-                                    <SearchBar
-                                        value={searchQuery}
-                                        onChange={setSearchQuery}
-                                        placeholder="Search posts..."
-                                    />
-                                </div>
-                                <Sidebar
-                                    months={monthGroups}
-                                    tags={allTags}
-                                    tagsWithColors={allTagsWithColors}
-                                    selectedMonth={selectedMonth}
-                                    selectedTags={selectedTags}
-                                    onMonthSelect={setSelectedMonth}
-                                    onTagToggle={handleToggleTag}
-                                    onClearFilters={handleClearFilters}
-                                    getTagBackgroundColor={getTagBackgroundColor}
-                                    getTagTextColor={getTagTextColor}
-                                />
-                            </aside>
+                    <aside
+                        className={`${styles.sidebar} ${
+                            isSidebarOpen ? styles.sidebarOpen : ''
+                        }`}
+                    >
+                        <div className={styles.sidebarHeader}>
+                            <h3>Filters</h3>
+                            <button
+                                className={styles.sidebarClose}
+                                onClick={() => setIsSidebarOpen(false)}
+                            >
+                                ✕
+                            </button>
+                        </div>
+                        <div className={styles.sidebarSearchSection}>
+                            <SearchBar
+                                value={searchQuery}
+                                onChange={setSearchQuery}
+                                placeholder='Search posts...'
+                            />
+                        </div>
+                        <Sidebar
+                            months={monthGroups}
+                            tags={allTags}
+                            tagsWithColors={allTagsWithColors}
+                            selectedMonth={selectedMonth}
+                            selectedTags={selectedTags}
+                            onMonthSelect={setSelectedMonth}
+                            onTagToggle={handleToggleTag}
+                            onClearFilters={handleClearFilters}
+                            getTagBackgroundColor={getTagBackgroundColor}
+                            getTagTextColor={getTagTextColor}
+                        />
+                    </aside>
                 </div>
 
                 <Footer />
@@ -228,7 +247,7 @@ export const CustomHomePage: React.FC<CustomHomePageProps> = ({ recordMap, site 
                 <button
                     className={styles.backToTop}
                     onClick={scrollToTop}
-                    aria-label="Back to top"
+                    aria-label='Back to top'
                 >
                     ↑
                 </button>
@@ -284,23 +303,25 @@ const BlogCard: React.FC<BlogCardProps> = ({ post }) => {
             <div className={styles.cardContent}>
                 {/* Title - matches notion-page-title-text */}
                 <h3 className={styles.cardTitle}>{post.title}</h3>
-                
+
                 {/* Description - matches notion-collection-card-property */}
                 {post.description && (
                     <div className={styles.cardDescription}>
                         {post.description}
                     </div>
                 )}
-                
+
                 {/* Tags - matches notion-property-multi_select with colors */}
                 {post.tags.length > 0 && (
                     <div className={styles.cardTags}>
                         {post.tags.map((tag) => (
-                            <span 
-                                key={tag.name} 
+                            <span
+                                key={tag.name}
                                 className={styles.cardTag}
                                 style={{
-                                    backgroundColor: getTagBackgroundColor(tag.color),
+                                    backgroundColor: getTagBackgroundColor(
+                                        tag.color
+                                    ),
                                     color: getTagTextColor(tag.color)
                                 }}
                             >
@@ -309,12 +330,10 @@ const BlogCard: React.FC<BlogCardProps> = ({ post }) => {
                         ))}
                     </div>
                 )}
-                
+
                 {/* Date - matches notion-property-date */}
                 {formattedDate && (
-                    <div className={styles.cardDate}>
-                        {formattedDate}
-                    </div>
+                    <div className={styles.cardDate}>{formattedDate}</div>
                 )}
             </div>
         </Link>

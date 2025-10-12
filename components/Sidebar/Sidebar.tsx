@@ -39,7 +39,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     // Group months by year for better organization
     const monthsByYear = React.useMemo(() => {
         const grouped: { [year: string]: MonthGroup[] } = {};
-        months.forEach(month => {
+        months.forEach((month) => {
             if (!grouped[month.year]) {
                 grouped[month.year] = [];
             }
@@ -49,7 +49,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
     }, [months]);
 
     // Get sorted years (newest first)
-    const sortedYears = Object.keys(monthsByYear).sort((a, b) => b.localeCompare(a));
+    const sortedYears = Object.keys(monthsByYear).sort((a, b) =>
+        b.localeCompare(a)
+    );
 
     return (
         <aside className={styles.sidebar}>
@@ -72,7 +74,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         <h3 className={styles.filterTitle}>Tags</h3>
                         <div className={styles.tagGrid}>
                             {tagsWithColors.map((tag) => {
-                                const isSelected = selectedTags.includes(tag.name);
+                                const isSelected = selectedTags.includes(
+                                    tag.name
+                                );
                                 return (
                                     <button
                                         key={tag.name}
@@ -81,10 +85,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                         }`}
                                         onClick={() => onTagToggle(tag.name)}
                                         title={`Filter by ${tag.name}`}
-                                        style={!isSelected ? {
-                                            backgroundColor: getTagBackgroundColor(tag.color),
-                                            color: getTagTextColor(tag.color)
-                                        } : undefined}
+                                        style={
+                                            !isSelected
+                                                ? {
+                                                      backgroundColor:
+                                                          getTagBackgroundColor(
+                                                              tag.color
+                                                          ),
+                                                      color: getTagTextColor(
+                                                          tag.color
+                                                      )
+                                                  }
+                                                : undefined
+                                        }
                                     >
                                         {tag.name}
                                         {isSelected && (
@@ -106,31 +119,51 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         {sortedYears.map((year) => (
                             <div key={year} className={styles.yearGroup}>
                                 <div className={styles.yearHeader}>
-                                    <span className={styles.yearLabel}>{year}</span>
+                                    <span className={styles.yearLabel}>
+                                        {year}
+                                    </span>
                                     <span className={styles.yearCount}>
-                                        {monthsByYear[year].reduce((sum, month) => sum + month.count, 0)}
+                                        {monthsByYear[year].reduce(
+                                            (sum, month) => sum + month.count,
+                                            0
+                                        )}
                                     </span>
                                 </div>
                                 <div className={styles.monthGrid}>
                                     {monthsByYear[year].map((monthGroup) => {
-                                        const isSelected = selectedMonth === monthGroup.key;
+                                        const isSelected =
+                                            selectedMonth === monthGroup.key;
                                         return (
                                             <button
                                                 key={monthGroup.key}
-                                                className={`${styles.monthItem} ${
-                                                    isSelected ? styles.monthItemActive : ''
+                                                className={`${
+                                                    styles.monthItem
+                                                } ${
+                                                    isSelected
+                                                        ? styles.monthItemActive
+                                                        : ''
                                                 }`}
                                                 onClick={() =>
                                                     onMonthSelect(
-                                                        isSelected ? null : monthGroup.key
+                                                        isSelected
+                                                            ? null
+                                                            : monthGroup.key
                                                     )
                                                 }
                                                 title={`Filter by ${monthGroup.month} ${monthGroup.year}`}
                                             >
-                                                <span className={styles.monthLabel}>
+                                                <span
+                                                    className={
+                                                        styles.monthLabel
+                                                    }
+                                                >
                                                     {monthGroup.month}
                                                 </span>
-                                                <span className={styles.monthCount}>
+                                                <span
+                                                    className={
+                                                        styles.monthCount
+                                                    }
+                                                >
                                                     {monthGroup.count}
                                                 </span>
                                             </button>

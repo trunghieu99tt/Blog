@@ -66,17 +66,24 @@ export const HomePage: React.FC = () => {
             const date = new Date(post.date);
             const month = date.toLocaleDateString('en-US', { month: 'long' });
             const year = date.getFullYear().toString();
-            const key = `${year}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+            const key = `${year}-${String(date.getMonth() + 1).padStart(
+                2,
+                '0'
+            )}`;
 
             if (groups.has(key)) {
-                const group = groups.get(key)!;
-                group.count += 1;
+                const group = groups.get(key);
+                if (group) {
+                    group.count += 1;
+                }
             } else {
                 groups.set(key, { month, year, count: 1, key });
             }
         });
 
-        return Array.from(groups.values()).sort((a, b) => b.key.localeCompare(a.key));
+        return Array.from(groups.values()).sort((a, b) =>
+            b.key.localeCompare(a.key)
+        );
     }, [posts]);
 
     // Extract unique tags from posts
@@ -90,8 +97,16 @@ export const HomePage: React.FC = () => {
                 });
             }
         });
-        return Array.from(tagSet).sort();
+        return Array.from(tagSet)
+            .sort()
+            .map((tag) => ({ name: tag, color: 'default' }));
     }, [posts]);
+
+    // Color mapping functions
+    const getTagBackgroundColor = (color: string) =>
+        `var(--notion-${color}_background, var(--notion-item-default))`;
+    const getTagTextColor = (color: string) =>
+        `var(--notion-item-text-${color}, var(--notion-item-text-default))`;
 
     // Filter posts based on search, month, and tags
     const filteredPosts = useMemo(() => {
@@ -156,29 +171,29 @@ export const HomePage: React.FC = () => {
     };
 
     const site = {
-        fontFamily: config.name || 'CMU Serif Roman'
-    };
+        fontFamily: selectedFont || 'CMU Serif Roman'
+    } as any;
 
     return (
         <>
             <Head>
                 <title>{config.name}</title>
-                <meta name="description" content={config.description} />
+                <meta name='description' content={config.description} />
             </Head>
 
             <CustomFont site={site} fontFamily={selectedFont} />
-            <BodyClassName className="home-page" />
+            <BodyClassName className='home-page' />
 
             <div className={styles.homePageContainer}>
                 <header className={styles.header}>
                     <h1 className={styles.mainTitle}>{config.name}</h1>
                     <p className={styles.subtitle}>{config.description}</p>
-                    
+
                     <div className={styles.searchSection}>
                         <SearchBar
                             value={searchQuery}
                             onChange={setSearchQuery}
-                            placeholder="Search posts..."
+                            placeholder='Search posts...'
                         />
                     </div>
                 </header>
@@ -186,12 +201,15 @@ export const HomePage: React.FC = () => {
                 <div className={styles.mainContent}>
                     <Sidebar
                         months={monthGroups}
-                        tags={allTags}
+                        tags={allTags.map((t) => t.name)}
+                        tagsWithColors={allTags}
                         selectedMonth={selectedMonth}
                         selectedTags={selectedTags}
                         onMonthSelect={setSelectedMonth}
                         onTagToggle={handleToggleTag}
                         onClearFilters={handleClearFilters}
+                        getTagBackgroundColor={getTagBackgroundColor}
+                        getTagTextColor={getTagTextColor}
                     />
 
                     <main className={styles.content}>
@@ -207,11 +225,18 @@ export const HomePage: React.FC = () => {
                             <>
                                 <div className={styles.resultsInfo}>
                                     <p className={styles.resultsCount}>
-                                        {filteredPosts.length} post{filteredPosts.length !== 1 ? 's' : ''}
-                                        {(selectedMonth || selectedTags.length > 0 || searchQuery) && ' found'}
+                                        {filteredPosts.length} post
+                                        {filteredPosts.length !== 1 ? 's' : ''}
+                                        {(selectedMonth ||
+                                            selectedTags.length > 0 ||
+                                            searchQuery) &&
+                                            ' found'}
                                     </p>
                                 </div>
-                                <PostList posts={filteredPosts} groupByMonth={false} />
+                                <PostList
+                                    posts={filteredPosts}
+                                    groupByMonth={false}
+                                />
                             </>
                         )}
                     </main>
@@ -229,4 +254,3 @@ export const HomePage: React.FC = () => {
         </>
     );
 };
-

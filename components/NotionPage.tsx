@@ -95,11 +95,6 @@ const Modal = dynamic(
     }
 );
 
-
-const removeDashes = (pageId: string) => {
-    return pageId.replace(/-/g, '');
-};
-
 export const NotionPage: React.FC<types.PageProps> = ({
     site,
     recordMap,
@@ -182,22 +177,9 @@ export const NotionPage: React.FC<types.PageProps> = ({
         />
     );
 
-    console.log('block', block)
-    console.log('recordMap', recordMap['block']['8c168a42-ab63-45ac-af42-9238ecf59582'])
-
-    const test1 = block?.content?.forEach(item => {
-        const content = recordMap.block[item]?.value
-        console.log('content', content?.parent_id)
-        if (removeDashes(content?.parent_id) === config.rootNotionPageId && content?.properties?.title?.length > 0) {
-            console.log('content', content)
-        }
-    })
-
     // Use custom homepage for root page, otherwise use NotionRenderer
     if (isRootPage) {
-        return (
-            <CustomHomePage recordMap={recordMap} site={site} />
-        );
+        return <CustomHomePage recordMap={recordMap} site={site} />;
     }
 
     return (

@@ -102,9 +102,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
                 )}
                 <div className={styles.postMeta}>
                     {formattedDate && (
-                        <span className={styles.postDate}>
-                            {formattedDate}
-                        </span>
+                        <span className={styles.postDate}>{formattedDate}</span>
                     )}
                     {post.tag && (
                         <span className={styles.postTag}>{post.tag}</span>
@@ -114,4 +112,3 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
         </Link>
     );
 };
-

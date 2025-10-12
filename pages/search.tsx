@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect, useMemo } from 'react';
 import Head from 'next/head';
-import { useRouter } from 'next/router';
 import useDarkMode from 'use-dark-mode';
 import BodyClassName from 'react-body-classname';
 import { iPost } from '../lib/types';
@@ -16,7 +15,6 @@ import * as config from '../lib/config';
 import styles from '../styles/search.module.css';
 
 export default function SearchPage() {
-    const router = useRouter();
     const [posts, setPosts] = useState<iPost[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -104,9 +102,7 @@ export default function SearchPage() {
 
     const handleToggleTag = (tag: string) => {
         setSelectedTags((prev) =>
-            prev.includes(tag)
-                ? prev.filter((t) => t !== tag)
-                : [...prev, tag]
+            prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
         );
     };
 
@@ -115,27 +111,25 @@ export default function SearchPage() {
     };
 
     const site = {
-        fontFamily: config.name || 'CMU Serif Roman'
-    };
+        fontFamily: selectedFont || 'CMU Serif Roman'
+    } as any;
 
     return (
         <>
             <Head>
                 <title>Search Posts - {config.name}</title>
                 <meta
-                    name="description"
+                    name='description'
                     content={`Search and browse all posts on ${config.name}`}
                 />
             </Head>
 
             <CustomFont site={site} fontFamily={selectedFont} />
-            <BodyClassName className="search-page" />
+            <BodyClassName className='search-page' />
 
             <div className={styles.searchPageContainer}>
                 <header className={styles.header}>
-                    <h1 className={styles.mainTitle}>
-                        Search & Browse Posts
-                    </h1>
+                    <h1 className={styles.mainTitle}>Search & Browse Posts</h1>
                     <p className={styles.subtitle}>
                         Find posts by name, filter by tags, or browse by month
                     </p>
@@ -145,7 +139,7 @@ export default function SearchPage() {
                     <SearchBar
                         value={searchQuery}
                         onChange={setSearchQuery}
-                        placeholder="Search posts by name or content..."
+                        placeholder='Search posts by name or content...'
                     />
 
                     {allTags.length > 0 && (
@@ -160,7 +154,7 @@ export default function SearchPage() {
                     <div className={styles.viewOptions}>
                         <label className={styles.checkboxLabel}>
                             <input
-                                type="checkbox"
+                                type='checkbox'
                                 checked={groupByMonth}
                                 onChange={(e) =>
                                     setGroupByMonth(e.target.checked)
@@ -208,4 +202,3 @@ export default function SearchPage() {
         </>
     );
 }
-

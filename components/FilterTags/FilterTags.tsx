@@ -53,4 +53,3 @@ export const FilterTags: React.FC<FilterTagsProps> = ({
         </div>
     );
 };
-

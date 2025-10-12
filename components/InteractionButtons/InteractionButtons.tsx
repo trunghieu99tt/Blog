@@ -136,9 +136,6 @@ export default function InteractionButtons({
 
             // Set new timer - only fires if no more clicks happen
             debounceTimerRef.current = setTimeout(() => {
-                console.log(
-                    `[Debounce] Sending ${pendingLikes} likes to server after user stopped clicking`
-                );
                 sendLikesToServer(pendingLikes);
                 setPendingLikes(0);
             }, DEBOUNCE_DELAY);
@@ -154,10 +151,6 @@ export default function InteractionButtons({
     const handleLike = () => {
         // Only block if no likes remaining - don't block during API call
         if (likesRemaining <= 0) return;
-
-        console.log(
-            '[Debounce] Like clicked - adding to pending queue (NO API call yet)'
-        );
 
         // Decrease remaining likes immediately for UI feedback
         const newLikesRemaining = Math.max(0, likesRemaining - 1);
@@ -176,9 +169,6 @@ export default function InteractionButtons({
         // This will trigger the useEffect above which resets the timer
         setPendingLikes((prev) => {
             const newCount = prev + 1;
-            console.log(
-                `[Debounce] Pending likes: ${newCount} (timer will reset)`
-            );
             return newCount;
         });
 
