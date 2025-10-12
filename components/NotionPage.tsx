@@ -25,7 +25,6 @@ import Footer from './Footer';
 import ErrorPage from 'pages/404';
 import Comment from './Comment';
 import BlogHeader from './BlogHeader';
-import FontChooser from './FontChooser';
 import { useFontChooser } from './FontChooser/useFontChooser';
 import Toolbox from './Toolbox';
 import InteractionButtons from './InteractionButtons';

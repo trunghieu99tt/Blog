@@ -2,7 +2,6 @@ import Head from 'next/head';
 import * as React from 'react';
 import * as types from 'lib/types';
 import * as config from 'lib/config';
-import Script from 'next/script';
 
 interface Props extends types.PageProps {
     title?: string;

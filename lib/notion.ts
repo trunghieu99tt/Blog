@@ -28,7 +28,7 @@ export const getAllPages = async (): Promise<Block[]> => {
 
 export async function getPage(pageId: string): Promise<ExtendedRecordMap> {
     let pages = null;
-    if (removeDashes(pageId) == config.rootNotionPageId) {
+    if (removeDashes(pageId) === config.rootNotionPageId) {
         pages = await mySiteNotion.getPage(pageId);
     } else {
         pages = await baseNotion.getPage(pageId);

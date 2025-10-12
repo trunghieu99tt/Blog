@@ -1,4 +1,3 @@
-import { Block } from 'notion-types';
 import { imageCDNHost } from './config';
 
 export const mapNotionImageUrl = (url: string, block: any): any => {

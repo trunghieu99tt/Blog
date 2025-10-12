@@ -1,7 +1,5 @@
 import React from 'react';
 
-import { FaEye } from 'react-icons/fa';
-
 // types
 import { iAuthor, iPost } from 'lib/types';
 

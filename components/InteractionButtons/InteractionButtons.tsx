@@ -33,7 +33,7 @@ export default function InteractionButtons({
 
     const likeButtonRef = useRef<HTMLButtonElement>(null);
     const shareButtonRef = useRef<HTMLButtonElement>(null);
-    const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+    const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const { triggerFirework } = useFireworks();
 
     const MAX_LIKES = 5;

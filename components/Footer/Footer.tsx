@@ -12,12 +12,6 @@ import SocialLinks from 'components/SocialLinks';
 import styles from './footer.module.css';
 
 const Footer: React.FC = () => {
-    const [hasMounted, setHasMounted] = React.useState(false);
-
-    React.useEffect(() => {
-        setHasMounted(true);
-    }, []);
-
     const copyRightYear = new Date().getUTCFullYear();
 
     return (

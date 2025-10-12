@@ -1,6 +1,6 @@
 import React from 'react';
 import cs from 'classnames';
-import { FaGithub, FaLinkedin, FaFacebook } from 'react-icons/fa';
+import { FaGithub, FaLinkedin } from 'react-icons/fa';
 
 import * as config from 'lib/config';
 

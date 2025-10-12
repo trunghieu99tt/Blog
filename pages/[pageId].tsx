@@ -4,7 +4,7 @@ import { getSiteMaps } from 'lib/get-site-maps';
 import { resolveNotionPage } from 'lib/resolve-notion-page';
 import { NotionPage } from 'components';
 import { getAllPages } from 'lib/notion';
-import { Block, iPost } from 'lib/types';
+import { Block } from 'lib/types';
 import { parsePageId } from 'notion-utils';
 
 export const getStaticProps = async (context) => {
