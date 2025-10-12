@@ -90,6 +90,9 @@
     color: #d1d5db;
 }
 
+.notion-property-select-item,
+.notion-property-status-item,
+.notion-property-multi_select-item {}
 
 
 /* Improve focus states for accessibility */

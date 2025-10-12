@@ -22,13 +22,13 @@ import { CustomFont } from './CustomFont';
 import Loading from './Loading';
 import PageHead from './PageHead';
 import Footer from './Footer';
-import ShareButton from './ShareButton';
 import ErrorPage from 'pages/404';
 import Comment from './Comment';
 import BlogHeader from './BlogHeader';
 import FontChooser from './FontChooser';
 import { useFontChooser } from './FontChooser/useFontChooser';
 import Toolbox from './Toolbox';
+import InteractionButtons from './InteractionButtons';
 
 const Code = dynamic(() =>
     import('react-notion-x/build/third-party/code').then(async (m) => {
@@ -154,15 +154,6 @@ export const NotionPage: React.FC<types.PageProps> = ({
     const socialDescription =
         getPageDescription(block, recordMap) ?? config.description;
 
-    let pageAside: React.ReactChild =
-        (isBlogPost && (
-            <ShareButton
-                title={title}
-                url={getCanonicalPageUrl(site, recordMap)(pageId)}
-            />
-        )) ||
-        null;
-
     // only display comments and page actions on blog post pages
     const comments = isBlogPost && config?.utterancesGitHubRepo && (
         <Comment
@@ -170,6 +161,15 @@ export const NotionPage: React.FC<types.PageProps> = ({
             issueMap='issue-term'
             issueTerm='title'
             theme={darkMode.value ? 'photon-dark' : 'github-light'}
+        />
+    );
+
+    // Add interaction buttons for blog posts
+    const interactionButtons = isBlogPost && (
+        <InteractionButtons
+            postId={pageId}
+            postTitle={title}
+            postUrl={getCanonicalPageUrl(site, recordMap)(pageId)}
         />
     );
 
@@ -212,8 +212,12 @@ export const NotionPage: React.FC<types.PageProps> = ({
                 mapPageUrl={siteMapPageUrl}
                 mapImageUrl={mapNotionImageUrl}
                 // searchNotion={searchNotion}
-                pageFooter={comments}
-                pageAside={pageAside}
+                pageFooter={
+                    <>
+                        {interactionButtons}
+                        {comments}
+                    </>
+                }
                 footer={<Footer />}
             />
 
