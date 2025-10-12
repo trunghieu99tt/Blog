@@ -278,8 +278,9 @@ export default function InteractionButtons({
             <div className={styles.container}>
                 <button
                     ref={likeButtonRef}
-                    className={`${styles.button} ${styles.likeButton} ${likesRemaining === 0 ? styles.maxedOut : ''
-                        }`}
+                    className={`${styles.button} ${styles.likeButton} ${
+                        likesRemaining === 0 ? styles.maxedOut : ''
+                    }`}
                     onClick={handleLike}
                     disabled={likesRemaining === 0}
                     aria-label={`Like this post (${interactions.likes} likes, ${likesRemaining} of ${MAX_LIKES} likes remaining)`}
@@ -309,8 +310,9 @@ export default function InteractionButtons({
                             fill='currentColor'
                             stroke='none'
                             style={{
-                                clipPath: `inset(${(likesRemaining / MAX_LIKES) * 100
-                                    }% 0 0 0)`
+                                clipPath: `inset(${
+                                    (likesRemaining / MAX_LIKES) * 100
+                                }% 0 0 0)`
                             }}
                         >
                             <path d='M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z' />

@@ -1,6 +1,6 @@
 // Utility functions for interaction handling
 
-import { api } from "./config";
+import { api } from './config';
 
 export interface InteractionCounts {
     likes: number;
