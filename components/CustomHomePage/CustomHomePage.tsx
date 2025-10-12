@@ -14,6 +14,7 @@ import {
 } from '../../lib/extract-posts-from-recordmap';
 import { SearchBar } from '../SearchBar';
 import { Sidebar } from '../Sidebar';
+import PageHead from '../PageHead';
 import Footer from '../Footer';
 import Toolbox from '../Toolbox';
 import { CustomFont } from '../CustomFont';
@@ -155,6 +156,8 @@ export const CustomHomePage: React.FC<CustomHomePageProps> = ({
 
     return (
         <>
+            <PageHead site={site} title={site.name} />
+
             <CustomFont site={site} fontFamily={selectedFont} />
             <BodyClassName className='custom-home-page' />
 

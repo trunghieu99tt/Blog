@@ -133,10 +133,6 @@
     background: linear-gradient(135deg, #667eea, #764ba2);
 }
 
-.portfolio:hover {
-    border-color: #667eea;
-}
-
 /* Dark mode support */
 .dark-mode .action {
     background: var(--dark-background-secondary);
