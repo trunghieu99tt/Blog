@@ -1,31 +1,32 @@
 .container {
     position: fixed;
-    left: 1rem;
+    left: max(1rem, calc((100vw - 1024px) / 2 - 120px));
     top: 50%;
     transform: translateY(-50%);
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.625rem;
     align-items: center;
     z-index: 100;
-    padding: 0.75rem;
-    background: var(--background);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg);
-    animation: slideInLeft 0.4s ease-out;
+    padding: 0.625rem;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(8px) saturate(150%);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12),
+        0 2px 4px rgba(0, 0, 0, 0.08);
+    animation: slideInLeft 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 @keyframes slideInLeft {
     from {
         opacity: 0;
-        transform: translateY(-50%) translateX(-20px);
+        transform: translateY(-50%) translateX(-30px) scale(0.9);
     }
 
     to {
         opacity: 1;
-        transform: translateY(-50%) translateX(0);
+        transform: translateY(-50%) translateX(0) scale(1);
     }
 }
 
@@ -35,41 +36,63 @@
     align-items: center;
     justify-content: center;
     gap: 0.375rem;
-    padding: 0.75rem;
+    padding: 0.625rem 0.875rem;
     width: 100%;
     min-width: 60px;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    background: var(--background);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.9));
     color: var(--text-secondary);
-    font-size: 0.875rem;
-    font-weight: 600;
+    font-size: 0.75rem;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06),
+        0 1px 3px rgba(0, 0, 0, 0.08);
+    font-family: inherit;
+}
+
+.button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.8), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .button:hover {
-    transform: scale(1.05);
-    box-shadow: var(--shadow-md);
-    border-color: var(--accent-color);
-    background: var(--background-hover);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12),
+        0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+.button:hover::before {
+    opacity: 1;
 }
 
 .button:active {
-    transform: scale(0.95);
+    transform: translateY(-1px) scale(0.98);
+    transition: all 0.1s ease;
 }
 
 .button:disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: not-allowed;
     transform: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .likeButton {
-    border-color: rgba(239, 68, 68, 0.2);
+    background: linear-gradient(135deg, #fef2f2, #fee2e2);
+    color: #dc2626;
     position: relative;
+    border-color: rgba(220, 38, 38, 0.15);
 }
 
 .likeButton::after {
@@ -78,44 +101,53 @@
     bottom: -0.375rem;
     left: 50%;
     transform: translateX(-50%);
-    width: 70%;
-    height: 1px;
-    background: var(--border-color);
+    width: 35%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #ef4444, transparent);
+    opacity: 0.3;
 }
 
 .likeButton:hover {
-    border-color: rgba(239, 68, 68, 0.4);
-    background: rgba(239, 68, 68, 0.05);
+    background: linear-gradient(135deg, #fee2e2, #fecaca);
+    border-color: rgba(220, 38, 38, 0.25);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.2),
+        0 3px 6px rgba(239, 68, 68, 0.12);
 }
 
 .likeButton.liked {
-    color: #ef4444;
-    border-color: rgba(239, 68, 68, 0.3);
-    background: rgba(239, 68, 68, 0.1);
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    border-color: rgba(220, 38, 38, 0.4);
 }
 
 .likeButton.liked:hover {
-    border-color: rgba(239, 68, 68, 0.5);
-    background: rgba(239, 68, 68, 0.15);
+    background: linear-gradient(135deg, #f87171, #ef4444);
+    border-color: rgba(220, 38, 38, 0.5);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.35),
+        0 3px 6px rgba(239, 68, 68, 0.2);
 }
 
 .shareButton {
-    border-color: rgba(59, 130, 246, 0.2);
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    color: #2563eb;
+    border-color: rgba(37, 99, 235, 0.15);
 }
 
 .shareButton:hover {
-    border-color: rgba(59, 130, 246, 0.4);
-    background: rgba(59, 130, 246, 0.05);
-    color: #3b82f6;
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    border-color: rgba(37, 99, 235, 0.25);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.2),
+        0 3px 6px rgba(59, 130, 246, 0.12);
 }
 
 .heartContainer {
     position: relative;
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 1.375rem;
+    height: 1.375rem;
     display: flex;
     align-items: center;
     justify-content: center;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08));
 }
 
 .heartOutline {
@@ -126,7 +158,8 @@
     left: 0;
     z-index: 1;
     color: currentColor;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.06));
 }
 
 .heartFill {
@@ -137,45 +170,56 @@
     left: 0;
     z-index: 2;
     color: #ef4444;
-    transition: clip-path 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: clip-path 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    filter: drop-shadow(0 1px 3px rgba(239, 68, 68, 0.25));
+}
+
+.likeButton.liked .heartFill {
+    color: white;
+    filter: drop-shadow(0 1px 3px rgba(255, 255, 255, 0.3));
 }
 
 .button:hover .heartContainer {
-    transform: scale(1.1);
+    transform: scale(1.15);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.12));
 }
 
 .likeButton:active .heartContainer {
-    animation: heartBeat 0.6s ease-in-out;
+    animation: heartBeat 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .count {
-    font-weight: 700;
-    font-size: 0.875rem;
+    font-weight: 800;
+    font-size: 0.8125rem;
     text-align: center;
     line-height: 1;
+    letter-spacing: -0.025em;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
 .likeProgress {
     font-size: 0.625rem;
-    font-weight: 600;
-    color: var(--text-secondary);
+    font-weight: 700;
+    color: inherit;
     opacity: 0.7;
     margin-top: 0.125rem;
+    letter-spacing: 0.025em;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .maxedOut {
-    opacity: 0.6;
+    opacity: 0.7;
     cursor: not-allowed !important;
+    filter: grayscale(0.3);
 }
 
 .maxedOut:hover {
     transform: none !important;
-    border-color: var(--border-color) !important;
-    background: var(--background) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
 }
 
 .maxedOut .heartFill {
-    animation: shimmer 2s ease-in-out infinite;
+    animation: shimmer 2.5s ease-in-out infinite;
 }
 
 @keyframes shimmer {
@@ -183,10 +227,12 @@
     0%,
     100% {
         opacity: 1;
+        filter: brightness(1);
     }
 
     50% {
-        opacity: 0.8;
+        opacity: 0.85;
+        filter: brightness(1.1);
     }
 }
 
@@ -195,16 +241,24 @@
         transform: scale(1);
     }
 
-    25% {
-        transform: scale(1.2);
+    15% {
+        transform: scale(1.25) rotate(-5deg);
     }
 
-    50% {
-        transform: scale(1.1);
+    30% {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    45% {
+        transform: scale(1.2) rotate(-5deg);
+    }
+
+    60% {
+        transform: scale(1.1) rotate(0deg);
     }
 
     75% {
-        transform: scale(1.2);
+        transform: scale(1.15);
     }
 
     100% {
@@ -212,15 +266,80 @@
     }
 }
 
+.icon {
+    width: 1.375rem;
+    height: 1.375rem;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08));
+}
+
+.button:hover .icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
 /* Dark mode adjustments */
 @media (prefers-color-scheme: dark) {
-    .likeButton.liked {
+    .container {
+        background: rgba(17, 24, 39, 0.98);
+        border: 1px solid rgba(55, 65, 81, 0.5);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4),
+            0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .button {
+        background: linear-gradient(135deg, rgba(31, 41, 55, 0.95), rgba(17, 24, 39, 0.95));
+        border-color: rgba(55, 65, 81, 0.5);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3),
+            0 1px 3px rgba(0, 0, 0, 0.4);
+    }
+
+    .button:hover {
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4),
+            0 3px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .likeButton {
+        background: linear-gradient(135deg, rgba(127, 29, 29, 0.7), rgba(153, 27, 27, 0.6));
         color: #fca5a5;
-        background: rgba(239, 68, 68, 0.15);
+        border-color: rgba(220, 38, 38, 0.3);
+    }
+
+    .likeButton:hover {
+        background: linear-gradient(135deg, rgba(153, 27, 27, 0.8), rgba(185, 28, 28, 0.7));
+        border-color: rgba(220, 38, 38, 0.4);
+        box-shadow: 0 6px 20px rgba(239, 68, 68, 0.25),
+            0 3px 6px rgba(239, 68, 68, 0.15);
+    }
+
+    .likeButton.liked {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
+    }
+
+    .shareButton {
+        background: linear-gradient(135deg, rgba(30, 58, 138, 0.7), rgba(37, 99, 235, 0.6));
+        color: #93c5fd;
+        border-color: rgba(37, 99, 235, 0.3);
     }
 
     .shareButton:hover {
-        color: #60a5fa;
+        background: linear-gradient(135deg, rgba(37, 99, 235, 0.8), rgba(59, 130, 246, 0.7));
+        border-color: rgba(37, 99, 235, 0.4);
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.25),
+            0 3px 6px rgba(59, 130, 246, 0.15);
+    }
+}
+
+/* Adjust position for medium screens */
+@media (max-width: 1600px) {
+    .container {
+        left: 1.5rem;
+    }
+}
+
+@media (max-width: 1400px) {
+    .container {
+        left: 1rem;
     }
 }
 

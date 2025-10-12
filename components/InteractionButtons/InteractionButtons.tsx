@@ -155,9 +155,18 @@ export default function InteractionButtons({ postId, postTitle, postUrl }: Inter
 
         const rect = shareButtonRef.current.getBoundingClientRect();
         const isMobile = window.innerWidth <= 768;
+        const menuWidth = 220; // Menu width
+        const totalOffset = menuWidth; // Total distance from button
+
+        // Calculate x position, ensuring it doesn't go off-screen
+        let x = rect.left - totalOffset;
+        if (x < 10) {
+            // If menu would go off-screen, position it to the right instead
+            x = rect.right + 10;
+        }
 
         setMenuPosition({
-            x: isMobile ? window.innerWidth / 2 : rect.right + 10,
+            x: isMobile ? window.innerWidth / 2 : x,
             y: isMobile ? rect.bottom + 10 : rect.top,
         });
         setShowShareMenu(true);

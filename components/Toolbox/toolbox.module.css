@@ -256,10 +256,20 @@
     color: #ffffff;
 }
 
-/* Responsive Design */
+/* Responsive Design - iPad and larger tablets */
+@media (max-width: 1024px) {
+    .toolbox {
+        bottom: 4rem;
+        /* Move higher to avoid footer overlap */
+        right: 2rem;
+        max-width: calc(100vw - 4rem);
+    }
+}
+
 @media (max-width: 768px) {
     .toolbox {
-        bottom: 1.5rem;
+        bottom: 6rem;
+        /* Move higher to avoid footer overlap */
         right: 1.5rem;
         max-width: calc(100vw - 3rem);
     }
@@ -279,7 +289,8 @@
 
 @media (max-width: 480px) {
     .toolbox {
-        bottom: 1rem;
+        bottom: 5rem;
+        /* Move higher to avoid footer overlap */
         right: 1rem;
         max-width: calc(100vw - 2rem);
     }
