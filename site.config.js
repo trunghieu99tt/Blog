@@ -8,13 +8,13 @@ module.exports = {
     rootNotionSpaceId: null,
 
     // basic site info (required)
-    name: "Hieu's blogs",
+    name: "Hieu's blog",
     domain: 'blog.hieunt.me',
     author: 'Hieu Nguyen',
 
     // open graph metadata (optional)
     description:
-        'This is a blog site which contains all blogs written by Nguyen Trung Hieu (aka Elliot Nguyen)',
+        'Hi, I’m Trung Hieu (Elliot) Nguyen, a software engineer passionate about building scalable backend systems and exploring innovative tech solutions. On this blog, I share insights, experiences, and lessons learned from my journey in software development. Thanks for stopping by!',
     socialImageTitle: 'Who wrote this shit?',
     socialImageSubtitle: 'Can you tell me who the hell wrote this! 👋',
 
@@ -22,6 +22,7 @@ module.exports = {
     facebook: 'ricky.nguyen99',
     github: 'trunghieu99tt',
     linkedin: 'elliotnguyen99',
+    portfolio: 'https://hieunt.me/',
 
     // default notion icon and cover images for site-wide consistency (optional)
     // page-specific values will override these site-wide defaults

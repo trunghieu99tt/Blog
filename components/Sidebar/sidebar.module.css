@@ -1,0 +1,421 @@
+/* Clean, aesthetic sidebar design */
+.sidebar {
+    width: 100%;
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+    max-height: calc(100vh - 4rem);
+    overflow-y: auto;
+    font-family: inherit;
+}
+
+.sidebarContent {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.clearSection {
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.clearButton {
+    width: 100%;
+    padding: 10px 16px;
+    background: #6366f1;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.clearButton:hover {
+    background: #4f46e5;
+    transform: translateY(-1px);
+}
+
+.filterSection {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.filterTitle {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* Tag Grid - Clean aesthetic design */
+.tagGrid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    padding: 0.25rem 0.75rem;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    font-family: inherit;
+    transition: all 0.2s ease;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+    background-color: var(--fg-color-0);
+    color: var(--fg-color);
+    box-shadow: none;
+    transform: translateZ(0);
+    font-weight: bold;
+}
+
+.tag:hover {
+    background-color: var(--fg-color-4);
+    color: white;
+    transform: translateY(-1px);
+}
+
+
+.tagSelected {
+    background: #3b82f6 !important;
+    color: white !important;
+    transform: translateY(-1px);
+    font-weight: 600;
+}
+
+.tagSelected:hover {
+    background: #2563eb !important;
+    transform: translateY(-2px);
+}
+
+
+.checkmark {
+    font-size: 10px;
+    font-weight: bold;
+    color: white;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-left: 4px;
+}
+
+/* Month Container - Increased height for better visibility */
+.monthContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-height: 600px; /* Increased from 400px */
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.yearGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 16px;
+    border: 1px solid #e2e8f0;
+}
+
+.yearHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 4px;
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 12px;
+}
+
+.yearLabel {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.yearCount {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    background: #6366f1;
+    color: white;
+    border-radius: 12px;
+    min-width: 24px;
+    text-align: center;
+}
+
+/* Month Grid - Larger, more spacious design */
+.monthGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+.monthItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 8px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    min-height: 70px; /* Increased height */
+    justify-content: center;
+    width: 100%;
+    overflow: visible;
+    font-family: inherit;
+}
+
+.monthItem:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+}
+
+.monthItemActive {
+    background: #6366f1;
+    border-color: #6366f1;
+    color: white;
+}
+
+.monthItemActive:hover {
+    background: #4f46e5;
+    border-color: #4f46e5;
+}
+
+.monthLabel {
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.2;
+    color: inherit;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    max-width: 100%;
+}
+
+.monthCount {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 6px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    min-width: 20px;
+    text-align: center;
+    color: inherit;
+}
+
+.monthItemActive .monthCount {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+/* Dark mode support */
+:global(.dark-mode) .filterTitle {
+    color: #f9fafb;
+    border-bottom-color: #374151;
+}
+
+:global(.dark-mode) .clearSection {
+    border-bottom-color: #374151;
+}
+
+:global(.dark-mode) .sidebarContent {
+    background: #1f2937;
+    border-color: #374151;
+}
+
+:global(.dark-mode) .yearGroup {
+    background: #374151;
+    border-color: #4b5563;
+}
+
+:global(.dark-mode) .yearHeader {
+    border-bottom-color: #4b5563;
+}
+
+:global(.dark-mode) .yearLabel {
+    color: #e5e7eb;
+}
+
+:global(.dark-mode) .yearCount {
+    background: #6366f1;
+    color: white;
+}
+
+:global(.dark-mode) .filterTitle {
+    color: #f9fafb;
+    border-bottom-color: #374151;
+}
+
+:global(.dark-mode) .clearSection {
+    border-bottom-color: #374151;
+}
+
+:global(.dark-mode) .clearButton {
+    background: #6366f1;
+    color: white;
+}
+
+:global(.dark-mode) .clearButton:hover {
+    background: #4f46e5;
+}
+
+:global(.dark-mode) .tag {
+    color: #000 !important;
+    filter: brightness(4);
+}
+
+:global(.dark-mode) .tag:hover {
+    opacity: 1;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+:global(.dark-mode) .tag:hover::before {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+:global(.dark-mode) .monthItem {
+    background: #374151;
+    border-color: #4b5563;
+    color: #d1d5db;
+}
+
+:global(.dark-mode) .monthItem:hover {
+    background: #4b5563;
+    border-color: #6b7280;
+}
+
+:global(.dark-mode) .monthItemActive {
+    background: #6366f1;
+    border-color: #6366f1;
+    color: white;
+}
+
+:global(.dark-mode) .monthItemActive:hover {
+    background: #4f46e5;
+    border-color: #4f46e5;
+}
+
+:global(.dark-mode) .monthItemActive .monthCount {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+/* Custom scrollbar for month container */
+.monthContainer::-webkit-scrollbar {
+    width: 4px;
+}
+
+.monthContainer::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 2px;
+}
+
+.monthContainer::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 2px;
+}
+
+.monthContainer::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Dark mode scrollbar */
+:global(.dark-mode) .monthContainer::-webkit-scrollbar-track {
+    background: #374151;
+}
+
+:global(.dark-mode) .monthContainer::-webkit-scrollbar-thumb {
+    background: #6b7280;
+}
+
+:global(.dark-mode) .monthContainer::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
+
+/* Mobile responsive */
+@media (max-width: 1024px) {
+    .sidebar {
+        position: static;
+        max-height: none;
+    }
+    
+    .sidebarContent {
+        gap: 1.5rem;
+    }
+    
+    .monthContainer {
+        max-height: none;
+    }
+    
+    .monthGrid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
+    .tagGrid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .monthGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .tagGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .tag {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+    
+    .monthItem {
+        min-height: 60px;
+        padding: 10px 6px;
+    }
+    
+    .monthLabel {
+        font-size: 11px;
+    }
+    
+    .monthCount {
+        font-size: 10px;
+    }
+}

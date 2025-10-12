@@ -80,6 +80,6 @@ export async function search(params: SearchParams): Promise<SearchResults> {
     return baseNotion.search(params);
 }
 
-const removeDashes = (pageId: string) => {
+export const removeDashes = (pageId: string) => {
     return pageId.replace(/-/g, '');
 };

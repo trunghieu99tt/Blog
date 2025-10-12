@@ -95,11 +95,33 @@ export const CustomFont: React.FC<CustomFontProps> = ({ site, fontFamily }) => {
         const fontSize = getFontSize(effectiveFontFamily);
 
         styleElement.textContent = `
-            .notion.notion-app {
+            body {
                 font-family: ${cssFontFamily}, -apple-system, BlinkMacSystemFont,
                   'Segoe UI', Helvetica, 'Apple Color Emoji', Arial, sans-serif,
                   'Segoe UI Emoji', 'Segoe UI Symbol' !important;
                 font-size: ${fontSize} !important;
+            }
+
+            .notion.notion-app {
+             font-family: ${cssFontFamily}, -apple-system, BlinkMacSystemFont,
+                  'Segoe UI', Helvetica, 'Apple Color Emoji', Arial, sans-serif,
+                  'Segoe UI Emoji', 'Segoe UI Symbol' !important;
+                font-size: ${fontSize} !important;
+            }
+
+            /* Specific overrides for components that might have their own font declarations */
+            .searchBarContainer,
+            .searchInput,
+            .sidebar,
+            .tag,
+            .monthItem,
+            .blogCard,
+            .cardTitle,
+            .cardDescription,
+            .cardTags,
+            .cardTag,
+            .cardDate {
+                font-family: inherit !important;
             }
         `;
     }, [effectiveFontFamily, fontLoaded]);

@@ -1,0 +1,1 @@
+export { CustomHomePage } from './CustomHomePage';

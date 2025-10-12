@@ -1,0 +1,636 @@
+/* Match exactly the original react-notion-x styling with shadows, 3D effects, and custom font */
+.homePageContainer {
+    min-height: 100vh;
+    padding: 0 2.5vw;
+    margin: 0 auto;
+    font-family: inherit;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding: 2rem 0 0 0;
+    border: none;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.mainTitle {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--fg-color);
+    margin: 0 0 0.5rem 0;
+    line-height: 1.2;
+}
+
+.siteDescription {
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--fg-color-50);
+    margin: 0 0 1.5rem 0;
+    line-height: 1.4;
+    opacity: 0.8;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    max-width: 100%;
+}
+
+.socialSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.socialLabel {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--fg-color-50);
+    margin: 0;
+    opacity: 0.9;
+}
+
+.sidebarSearchSection {
+    margin-bottom: 2rem;
+    padding: 1rem 1rem 0 1rem;
+}
+
+.sidebarSearchSection .searchBarContainer {
+    max-width: none;
+}
+
+.mainContent {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 3rem;
+    flex: 1;
+    margin-bottom: 3rem;
+    align-items: start;
+}
+
+.content {
+    min-width: 0;
+}
+
+.sidebar {
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+    max-height: calc(100vh - 4rem);
+    overflow-y: auto;
+}
+
+.mobileControls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    gap: 1rem;
+}
+
+.resultsInfo {
+    display: none; /* Hide results count to match original design */
+}
+
+.mobileFilterToggle {
+    display: none;
+    padding: 8px 16px;
+    background: #6366f1;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mobileFilterToggle:hover {
+    background: #4f46e5;
+    transform: translateY(-1px);
+}
+
+.emptyState {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--fg-color-3);
+    font-size: 1.1rem;
+}
+
+/* Blog Grid - exactly match notion-gallery-grid */
+.blogGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    grid-gap: 2.5rem;
+    gap: 2.5rem;
+    grid-auto-rows: initial;
+    padding-top: 2rem;
+}
+
+/* Blog Card - exactly match notion-collection-card with 3D effects */
+.blogCard {
+    display: block;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    padding: 24px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    will-change: transform, box-shadow, border-color;
+}
+
+/* Add the subtle gradient border effect */
+.blogCard::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    height: 3px;
+    background: linear-gradient(90deg, #374151, #6b7280, #9ca3af);
+    border-radius: 20px 20px 0 0;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+/* Add the shimmer effect */
+.blogCard::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.1) 50%,
+        transparent 70%
+    );
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Hover effects with 3D transformation */
+.blogCard:hover {
+    transform: translateY(-12px) scale(1.02);
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.15), 0 8px 16px rgba(99, 102, 241, 0.1);
+    border-color: rgba(99, 102, 241, 0.3);
+    background: #ffffff;
+}
+
+.blogCard:hover::before {
+    opacity: 1;
+}
+
+.blogCard:hover::after {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+}
+
+/* Active state */
+.blogCard:active {
+    transform: translateY(-8px) scale(1.01);
+    transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.cardContent {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    position: relative;
+    z-index: 2;
+}
+
+/* Title - exactly match notion-page-title-text */
+.cardTitle {
+    font-size: 1.4rem;
+    line-height: 1.4;
+    font-weight: 600;
+    white-space: unset;
+    color: #1f2937;
+    margin-bottom: 12px;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    display: inline-block;
+    margin: 0 0 0.75rem 0;
+}
+
+.blogCard:hover .cardTitle {
+    color: #6366f1;
+    transform: translateX(4px);
+}
+
+/* Description - exactly match notion-collection-card-property */
+.cardDescription {
+    white-space: unset;
+    text-overflow: unset;
+    margin-bottom: 8px;
+    font-size: 14.5px;
+    color: #6b7280;
+    line-height: 1.5;
+    margin: 0 0 0.75rem 0;
+}
+
+/* Tags - exactly match notion-property-multi_select */
+.cardTags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 8px;
+}
+
+.cardTag {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background-color: var(--fg-color-0);
+    color: var(--fg-color);
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+.blogCard:hover .cardTag {
+    background-color: var(--fg-color-4);
+    color: white;
+}
+
+.cardDate {
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin: 0;
+}
+
+/* Dark mode support - comprehensive dark mode styling */
+:global(.dark-mode) .homePageContainer {
+    background: #111827;
+    color: #f9fafb;
+}
+
+:global(.dark-mode) .header {
+    background: #111827;
+}
+
+:global(.dark-mode) .mainTitle {
+    color: #f9fafb;
+}
+
+:global(.dark-mode) .siteDescription {
+    color: #d1d5db;
+}
+
+:global(.dark-mode) .socialLabel {
+    color: #9ca3af;
+}
+
+:global(.dark-mode) .mainContent {
+    background: #111827;
+}
+
+:global(.dark-mode) .content {
+    background: #111827;
+}
+
+:global(.dark-mode) .emptyState {
+    color: #9ca3af;
+}
+
+/* Dark mode support - match react-notion-x dark mode with shadows */
+:global(.dark-mode) .blogCard {
+    background: #1f2937;
+    border-color: rgba(75, 85, 99, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+:global(.dark-mode) .blogCard:hover {
+    background: #374151;
+    border-color: rgba(99, 102, 241, 0.5);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+:global(.dark-mode) .cardTitle {
+    color: #f3f4f6;
+}
+
+:global(.dark-mode) .blogCard:hover .cardTitle {
+    color: #a78bfa;
+}
+
+:global(.dark-mode) .cardDescription {
+    color: #9ca3af;
+}
+
+:global(.dark-mode) .cardTag {
+    opacity: 0.9;
+    color: #000 !important;
+    filter: brightness(4);
+}
+
+:global(.dark-mode) .blogCard:hover .cardTag {
+    opacity: 1;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+:global(.dark-mode) .resultsCount {
+    color: #9ca3af;
+}
+
+:global(.dark-mode) .mobileFilterToggle {
+    background: #6366f1;
+    color: white;
+}
+
+:global(.dark-mode) .mobileFilterToggle:hover {
+    background: #4f46e5;
+}
+
+
+/* Mobile responsive - match original breakpoints */
+@media only screen and (max-width: 968px) {
+    .homePageContainer {
+        padding: 0 1rem;
+    }
+
+    .mainContent {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .sidebar {
+        position: static;
+        order: -1;
+        max-height: none;
+        margin-bottom: 2rem;
+    }
+
+    .blogGrid {
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        grid-gap: 1.5rem;
+        gap: 1.5rem;
+        padding: 0 0.5rem;
+    }
+
+    .blogCard {
+        padding: 20px;
+    }
+
+    .cardTitle {
+        font-size: 1.2rem;
+    }
+}
+
+@media only screen and (max-width: 640px) {
+    .homePageContainer {
+        padding: 0 0.5rem;
+    }
+
+    .header {
+        padding: 1rem 0 0 0;
+        margin-bottom: 1.5rem;
+    }
+
+    .mainTitle {
+        font-size: 1.75rem;
+    }
+
+    .mainContent {
+        margin-bottom: 2rem;
+    }
+
+    .blogGrid {
+        grid-template-columns: 1fr;
+        grid-gap: 1rem;
+        gap: 1rem;
+        padding: 0;
+    }
+
+    .blogCard {
+        margin: 0 0.5rem;
+        padding: 16px;
+    }
+
+    .cardTitle {
+        font-size: 1.1rem;
+    }
+}
+
+/* Ensure the grid matches the original exactly */
+@media only screen and (max-width: 400px) {
+    .blogGrid {
+        grid-template-columns: 1fr;
+        grid-gap: 1rem;
+        gap: 1rem;
+        padding: 0;
+    }
+
+    .blogCard {
+        margin: 0 0.5rem;
+        padding: 16px;
+    }
+}
+
+/* Mobile responsive sidebar */
+@media (max-width: 1024px) {
+    .mainContent {
+        grid-template-columns: 1fr;
+        gap: 0;
+        position: relative;
+    }
+    
+    .sidebar {
+        position: fixed !important;
+        top: 0 !important;
+        right: -100% !important;
+        width: 320px !important;
+        height: 100vh !important;
+        background: white !important;
+        z-index: 1000 !important;
+        transition: right 0.3s ease !important;
+        box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1) !important;
+        padding: 0 !important;
+        overflow-y: auto !important;
+        margin: 0 !important;
+        max-height: none !important;
+    }
+    
+    :global(.dark-mode) .sidebar {
+        background: #1f2937 !important;
+        box-shadow: -4px 0 12px rgba(0, 0, 0, 0.3) !important;
+    }
+    
+    .sidebarOpen {
+        right: 0 !important;
+    }
+    
+    .mobileFilterToggle {
+        display: block;
+    }
+    
+    .resultsInfo {
+        display: block;
+    }
+    
+    .mobileControls {
+        display: flex;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100% !important;
+        right: -100% !important;
+    }
+    
+    .sidebarOpen {
+        right: 0 !important;
+    }
+}
+
+.sidebarOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    display: none;
+}
+
+@media (max-width: 1024px) {
+    .sidebarOverlay {
+        display: block;
+    }
+    
+    :global(.dark-mode) .sidebar {
+        background: #1f2937 !important;
+        border-left: 1px solid #374151 !important;
+    }
+}
+
+.sidebarHeader {
+    display: none;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 1rem 1rem 1rem 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    background: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    margin-top: 0;
+}
+
+.sidebarHeader h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--fg-color);
+}
+
+.sidebarClose {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #64748b;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.sidebarClose:hover {
+    background: #f1f5f9;
+    color: #374151;
+}
+
+@media (max-width: 1024px) {
+    .sidebarHeader {
+        display: flex;
+    }
+}
+
+:global(.dark-mode) .sidebarHeader {
+    border-bottom-color: #374151;
+    background: #1f2937;
+}
+
+:global(.dark-mode) .sidebarHeader h3 {
+    color: #f9fafb;
+}
+
+:global(.dark-mode) .sidebarClose {
+    color: #9ca3af;
+}
+
+:global(.dark-mode) .sidebarClose:hover {
+    background: #374151;
+    color: #f3f4f6;
+}
+
+/* Back to Top Button */
+.backToTop {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 50px;
+    height: 50px;
+    background: #6366f1;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    transition: all 0.3s ease;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.backToTop:hover {
+    background: #4f46e5;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+}
+
+.backToTop:active {
+    transform: translateY(0);
+}
+
+/* Dark mode support */
+:global(.dark-mode) .backToTop {
+    background: #1f2937;
+    color: #f9fafb;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+:global(.dark-mode) .backToTop:hover {
+    background: #374151;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .backToTop {
+        bottom: 1rem;
+        right: 1rem;
+        width: 45px;
+        height: 45px;
+        font-size: 18px;
+    }
+}

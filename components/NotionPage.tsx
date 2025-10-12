@@ -28,6 +28,8 @@ import BlogHeader from './BlogHeader';
 import { useFontChooser } from './FontChooser/useFontChooser';
 import Toolbox from './Toolbox';
 import InteractionButtons from './InteractionButtons';
+import { CustomHomePage } from './CustomHomePage';
+import { searchNotion } from 'lib/search-notion';
 
 const Code = dynamic(
     () =>
@@ -93,6 +95,11 @@ const Modal = dynamic(
     }
 );
 
+
+const removeDashes = (pageId: string) => {
+    return pageId.replace(/-/g, '');
+};
+
 export const NotionPage: React.FC<types.PageProps> = ({
     site,
     recordMap,
@@ -139,8 +146,7 @@ export const NotionPage: React.FC<types.PageProps> = ({
     const canonicalPageUrl =
         !config.isDev && getCanonicalPageUrl(site, recordMap)(pageId);
 
-    // const isRootPage =
-    //   parsePageId(block.id) === parsePageId(site.rootNotionPageId)
+    const isRootPage = pageId === site.rootNotionPageId;
     const isBlogPost =
         block.type === 'page' && block.parent_table === 'collection';
     const showTableOfContents = !!isBlogPost;
@@ -175,6 +181,24 @@ export const NotionPage: React.FC<types.PageProps> = ({
             postUrl={getCanonicalPageUrl(site, recordMap)(pageId)}
         />
     );
+
+    console.log('block', block)
+    console.log('recordMap', recordMap['block']['8c168a42-ab63-45ac-af42-9238ecf59582'])
+
+    const test1 = block?.content?.forEach(item => {
+        const content = recordMap.block[item]?.value
+        console.log('content', content?.parent_id)
+        if (removeDashes(content?.parent_id) === config.rootNotionPageId && content?.properties?.title?.length > 0) {
+            console.log('content', content)
+        }
+    })
+
+    // Use custom homepage for root page, otherwise use NotionRenderer
+    if (isRootPage) {
+        return (
+            <CustomHomePage recordMap={recordMap} site={site} />
+        );
+    }
 
     return (
         <React.Fragment>
@@ -214,7 +238,7 @@ export const NotionPage: React.FC<types.PageProps> = ({
                 defaultPageCoverPosition={config.defaultPageCoverPosition}
                 mapPageUrl={siteMapPageUrl}
                 mapImageUrl={mapNotionImageUrl}
-                // searchNotion={searchNotion}
+                searchNotion={searchNotion}
                 pageFooter={
                     <>
                         {interactionButtons}

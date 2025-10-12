@@ -1,6 +1,6 @@
 import React from 'react';
 import cs from 'classnames';
-import { FaGithub, FaLinkedin } from 'react-icons/fa';
+import { FaGithub, FaLinkedin, FaGlobe } from 'react-icons/fa';
 
 import * as config from 'lib/config';
 
@@ -26,6 +26,13 @@ const socialLinks: SocialLink[] = [
         href: `https://www.linkedin.com/in/${config.linkedin}`,
         title: `LinkedIn ${config.author}`,
         icon: <FaLinkedin />
+    },
+
+    config.portfolio && {
+        name: 'portfolio',
+        href: config.portfolio,
+        title: `Portfolio - ${config.author}`,
+        icon: <FaGlobe />
     }
 ];
 
