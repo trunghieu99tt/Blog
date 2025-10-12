@@ -1,30 +1,13 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-
 const redis = require('../../lib/redis');
-
-// Response types
-interface InteractionResponse {
-    likes: number;
-    shares: number;
-    remaining?: number;
-    success?: boolean;
-    error?: string;
-    details?: string;
-}
-
-interface InteractionRequestBody {
-    type: 'like' | 'share';
-    count?: number;
-}
 
 /**
  * Get client identifier based on IP address and User-Agent
  * This creates a unique identifier for rate limiting
  */
-function getClientId(req: NextApiRequest): string {
+function getClientId(req) {
     // Get IP address
     const forwarded = req.headers['x-forwarded-for'];
-    let ip: string;
+    let ip;
 
     if (typeof forwarded === 'string') {
         ip = forwarded.split(',')[0].trim();
@@ -64,10 +47,7 @@ function getClientId(req: NextApiRequest): string {
  * GET /api/interactions/[postId] - Get interaction counts
  * POST /api/interactions/[postId] - Increment like or share
  */
-export default async (
-    req: NextApiRequest,
-    res: NextApiResponse<InteractionResponse>
-): Promise<void> => {
+module.exports = async (req, res) => {
     const { postId } = req.query;
 
     // Validate postId
@@ -81,7 +61,7 @@ export default async (
 
     try {
         if (req.method === 'POST') {
-            const { type, count } = req.body as InteractionRequestBody;
+            const { type, count } = req.body;
             const clientId = getClientId(req);
 
             if (type === 'like') {
@@ -210,4 +190,4 @@ export default async (
                     : undefined
         });
     }
-}
+};
