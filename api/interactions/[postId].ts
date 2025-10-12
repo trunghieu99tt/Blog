@@ -64,10 +64,10 @@ function getClientId(req: NextApiRequest): string {
  * GET /api/interactions/[postId] - Get interaction counts
  * POST /api/interactions/[postId] - Increment like or share
  */
-export default async function handler(
+export default async (
     req: NextApiRequest,
     res: NextApiResponse<InteractionResponse>
-): Promise<void> {
+): Promise<void> => {
     const { postId } = req.query;
 
     // Validate postId
