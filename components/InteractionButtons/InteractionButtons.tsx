@@ -290,6 +290,7 @@ export default function InteractionButtons({
                             : 'Maximum likes reached'
                     }
                 >
+                    <div className={styles.likeButtonBgPane} />
                     <div className={styles.heartContainer}>
                         <svg
                             className={styles.heartOutline}
@@ -330,6 +331,7 @@ export default function InteractionButtons({
                     disabled={isLoading}
                     aria-label={`Share this post (${interactions.shares} shares)`}
                 >
+                    <div className={styles.shareButtonBgPane} />
                     <svg
                         className={styles.icon}
                         viewBox='0 0 24 24'

@@ -16,7 +16,6 @@ export async function getInteractionCounts(
         if (response.ok) {
             return response.json();
         }
-        throw new Error('Failed to fetch interaction counts');
     } catch (error) {
         console.error('Error fetching interaction counts:', error);
         return { likes: 0, shares: 0, remaining: 0 };

@@ -105,10 +105,6 @@
     background: #0077b5;
 }
 
-.linkedin:hover {
-    border-color: #0077b5;
-}
-
 .github .actionBgPane {
     background: linear-gradient(135deg, #333, #24292e);
 }
