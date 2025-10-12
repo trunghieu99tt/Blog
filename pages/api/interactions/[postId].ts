@@ -87,7 +87,7 @@ export default async function handler(
                 // Check how many likes this user has already given to this post
                 const userLikesKey = `user_likes:${postId}:${clientId}`;
                 const userLikesCount = await redis.get(userLikesKey);
-                const currentUserLikes = parseInt(userLikesCount || '0');
+                const currentUserLikes = parseInt(String(userLikesCount || '0'));
 
                 // Enforce max 5 likes per user per post
                 const requestedCount = Math.max(1, Math.min(count || 1, 5));
@@ -99,8 +99,8 @@ export default async function handler(
 
                     return res.status(429).json({
                         error: 'Maximum likes reached',
-                        likes: parseInt(likes || '0'),
-                        shares: parseInt(shares || '0'),
+                        likes: parseInt(String(likes || '0')),
+                        shares: parseInt(String(shares || '0')),
                         remaining: 0
                     });
                 }
@@ -114,8 +114,8 @@ export default async function handler(
                 const shares = await redis.get(`shares:${postId}`);
 
                 return res.json({
-                    likes: newLikes,
-                    shares: parseInt(shares || '0'),
+                    likes: parseInt(String(newLikes)),
+                    shares: parseInt(String(shares || '0')),
                     success: true,
                     remaining: 5 - (currentUserLikes + allowedCount)
                 });
@@ -124,7 +124,7 @@ export default async function handler(
                 // Rate limiting for shares (max 10 per user per post per 24h)
                 const userSharesKey = `user_shares:${postId}:${clientId}`;
                 const userSharesCount = await redis.get(userSharesKey);
-                const currentUserShares = parseInt(userSharesCount || '0');
+                const currentUserShares = parseInt(String(userSharesCount || '0'));
 
                 if (currentUserShares >= 10) {
                     const likes = await redis.get(`likes:${postId}`);
@@ -132,8 +132,8 @@ export default async function handler(
 
                     return res.status(429).json({
                         error: 'Maximum shares reached',
-                        likes: parseInt(likes || '0'),
-                        shares: parseInt(shares || '0')
+                        likes: parseInt(String(likes || '0')),
+                        shares: parseInt(String(shares || '0'))
                     });
                 }
 
@@ -146,8 +146,8 @@ export default async function handler(
                 const likes = await redis.get(`likes:${postId}`);
 
                 return res.json({
-                    likes: parseInt(likes || '0'),
-                    shares: newShares,
+                    likes: parseInt(String(likes || '0')),
+                    shares: parseInt(String(newShares)),
                     success: true
                 });
             }
@@ -169,11 +169,11 @@ export default async function handler(
             // Fetch user's remaining likes
             const userLikesKey = `user_likes:${postId}:${clientId}`;
             const userLikesCount = await redis.get(userLikesKey);
-            const remaining = Math.max(0, 5 - parseInt(userLikesCount || '0'));
+            const remaining = Math.max(0, 5 - parseInt(String(userLikesCount || '0')));
 
             return res.json({
-                likes: parseInt(likes || '0'),
-                shares: parseInt(shares || '0'),
+                likes: parseInt(String(likes || '0')),
+                shares: parseInt(String(shares || '0')),
                 remaining
             });
         }
