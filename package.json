@@ -23,6 +23,7 @@
     "test": "run-s test:*",
     "test:lint": "eslint .",
     "test:prettier": "prettier '**/*.{js,jsx,ts,tsx}' --check",
+    "prettier:write": "prettier '**/*.{js,jsx,ts,tsx}' --write",
     "posttest": "run-s build"
   },
   "dependencies": {

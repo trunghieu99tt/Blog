@@ -72,39 +72,44 @@ const Toolbox: React.FC<ToolboxProps> = ({
         setIsExpanded((prev) => !prev);
     }, []);
 
-    const handleCalendlyClick = React.useCallback(async (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        if (typeof window === 'undefined') return;
-        
-        // Load Calendly dynamically only when needed
-        if (!(window as any).Calendly) {
-            // Load CSS
-            const cssLink = document.createElement('link');
-            cssLink.rel = 'stylesheet';
-            cssLink.href = 'https://assets.calendly.com/assets/external/widget.css';
-            document.head.appendChild(cssLink);
-            
-            // Load JS
-            const script = document.createElement('script');
-            script.src = 'https://assets.calendly.com/assets/external/widget.js';
-            script.async = true;
-            document.head.appendChild(script);
-            
-            // Wait for script to load
-            await new Promise((resolve) => {
-                script.onload = resolve;
-            });
-        }
-        
-        // Show the widget
-        if ((window as any).Calendly) {
-            (window as any).Calendly.showPopupWidget(
-                'https://calendly.com/ricky_nguyen/30min'
-            );
-        }
-    }, []);
+    const handleCalendlyClick = React.useCallback(
+        async (e: React.MouseEvent) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (typeof window === 'undefined') return;
+
+            // Load Calendly dynamically only when needed
+            if (!(window as any).Calendly) {
+                // Load CSS
+                const cssLink = document.createElement('link');
+                cssLink.rel = 'stylesheet';
+                cssLink.href =
+                    'https://assets.calendly.com/assets/external/widget.css';
+                document.head.appendChild(cssLink);
+
+                // Load JS
+                const script = document.createElement('script');
+                script.src =
+                    'https://assets.calendly.com/assets/external/widget.js';
+                script.async = true;
+                document.head.appendChild(script);
+
+                // Wait for script to load
+                await new Promise((resolve) => {
+                    script.onload = resolve;
+                });
+            }
+
+            // Show the widget
+            if ((window as any).Calendly) {
+                (window as any).Calendly.showPopupWidget(
+                    'https://calendly.com/ricky_nguyen/30min'
+                );
+            }
+        },
+        []
+    );
 
     // Don't render until mounted to prevent hydration mismatches
     if (!hasMounted) {
