@@ -46,6 +46,16 @@ import { Analytics } from '@vercel/analytics/next';
 
 if (typeof window !== 'undefined') {
     bootstrap();
+
+    // Handle browser extension runtime errors
+    if (
+        typeof (window as any).chrome !== 'undefined' &&
+        (window as any).chrome.runtime &&
+        (window as any).chrome.runtime.lastError
+    ) {
+        // Silently ignore extension runtime errors
+        (window as any).chrome.runtime.lastError = undefined;
+    }
 }
 
 export default function App({ Component, pageProps }) {
