@@ -36,19 +36,6 @@ const Toolbox: React.FC<ToolboxProps> = ({
 
     React.useEffect(() => {
         setHasMounted(true);
-        // Hide any existing Calendly badge widgets since we're using our own button
-        const hideBadgeWidget = () => {
-            const badgeWidget = document.querySelector(
-                '.calendly-badge-widget'
-            );
-            if (badgeWidget) {
-                (badgeWidget as HTMLElement).style.display = 'none';
-            }
-        };
-
-        // Try to hide immediately and also after a short delay in case it loads later
-        hideBadgeWidget();
-        setTimeout(hideBadgeWidget, 1000);
     }, []);
 
     // Close toolbox when clicking outside
@@ -85,10 +72,34 @@ const Toolbox: React.FC<ToolboxProps> = ({
         setIsExpanded((prev) => !prev);
     }, []);
 
-    const handleCalendlyClick = React.useCallback((e: React.MouseEvent) => {
+    const handleCalendlyClick = React.useCallback(async (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        if (typeof window !== 'undefined' && (window as any).Calendly) {
+        
+        if (typeof window === 'undefined') return;
+        
+        // Load Calendly dynamically only when needed
+        if (!(window as any).Calendly) {
+            // Load CSS
+            const cssLink = document.createElement('link');
+            cssLink.rel = 'stylesheet';
+            cssLink.href = 'https://assets.calendly.com/assets/external/widget.css';
+            document.head.appendChild(cssLink);
+            
+            // Load JS
+            const script = document.createElement('script');
+            script.src = 'https://assets.calendly.com/assets/external/widget.js';
+            script.async = true;
+            document.head.appendChild(script);
+            
+            // Wait for script to load
+            await new Promise((resolve) => {
+                script.onload = resolve;
+            });
+        }
+        
+        // Show the widget
+        if ((window as any).Calendly) {
             (window as any).Calendly.showPopupWidget(
                 'https://calendly.com/ricky_nguyen/30min'
             );

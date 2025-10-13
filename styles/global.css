@@ -43,6 +43,18 @@
     box-sizing: border-box;
 }
 
+/* Performance optimizations */
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-display: swap;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
 a {
     color: inherit;
     text-decoration: none;

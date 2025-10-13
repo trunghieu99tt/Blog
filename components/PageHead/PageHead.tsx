@@ -75,17 +75,13 @@ const PageHead: React.FC<Props> = ({
                 content={isBlogPost ? 'article' : 'website'}
             />
 
+            {/* Load Umami analytics with proper privacy settings */}
             <script
                 defer
                 src='https://cloud.umami.is/script.js'
                 data-website-id='3580f550-d3be-4d55-ba73-12593758e87b'
-            ></script>
-
-            <script
-                defer
-                type='text/javascript'
-                src='https://assets.calendly.com/assets/external/widget.js'
-                async
+                data-do-not-track='true'
+                data-respect-dnt='true'
             ></script>
         </Head>
     );
