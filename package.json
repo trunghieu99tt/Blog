@@ -68,6 +68,9 @@
     "use-dark-mode": "^2.3.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.28.4",
+    "@babel/eslint-parser": "^7.28.4",
+    "@babel/preset-react": "^7.27.1",
     "@next/bundle-analyzer": "^10.2.0",
     "@types/node": "^15.0.1",
     "@types/node-fetch": "^2.5.10",

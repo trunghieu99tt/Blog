@@ -24,7 +24,7 @@ export interface BlogPost {
  */
 export function extractPostsFromRecordMap(
     recordMap: ExtendedRecordMap,
-    site: types.Site
+    _site: types.Site
 ): BlogPost[] {
     const posts: BlogPost[] = [];
 
