@@ -55,6 +55,67 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+/* Mermaid diagram styles */
+.mermaid {
+    text-align: center;
+    margin: 2rem 0;
+    min-height: 400px;
+    width: 100%;
+}
+
+.mermaid svg {
+    max-width: 100%;
+    min-width: 600px;
+    height: auto;
+    font-size: 16px !important;
+}
+
+/* Make Mermaid text larger and more readable */
+.mermaid svg text {
+    font-size: 16px !important;
+    font-weight: 500 !important;
+}
+
+/* Improve node styling */
+.mermaid svg .node rect,
+.mermaid svg .node circle,
+.mermaid svg .node ellipse,
+.mermaid svg .node polygon {
+    stroke-width: 2px !important;
+}
+
+/* Improve edge styling */
+.mermaid svg .edgePath .path {
+    stroke-width: 2px !important;
+}
+
+.mermaid svg .edgeLabel {
+    font-size: 14px !important;
+    font-weight: 500 !important;
+}
+
+/* Ensure mermaid diagrams work well in dark mode */
+.dark-mode .mermaid {
+    filter: invert(1) hue-rotate(180deg);
+}
+
+.dark-mode .mermaid .node rect,
+.dark-mode .mermaid .node circle,
+.dark-mode .mermaid .node ellipse,
+.dark-mode .mermaid .node polygon {
+    fill: #1e293b !important;
+    stroke: #475569 !important;
+}
+
+.dark-mode .mermaid .edgePath .path {
+    stroke: #94a3b8 !important;
+}
+
+.dark-mode .mermaid .edgeLabel {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+}
+
 a {
     color: inherit;
     text-decoration: none;

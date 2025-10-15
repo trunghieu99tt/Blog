@@ -1,0 +1,175 @@
+.mermaidContainer {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    border-radius: 12px;
+    background: var(--background-secondary, #f8fafc);
+    border: 1px solid var(--border-color, #e2e8f0);
+    overflow-x: auto;
+    text-align: center;
+    min-height: 400px;
+    width: 100%;
+    position: relative;
+}
+
+.styleButton {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 8px 16px;
+    background: var(--primary-color, #4a90e2);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.styleButton:hover {
+    background: var(--primary-dark, #357abd);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+}
+
+.mermaidChart {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+    width: 100%;
+}
+
+.mermaidChart svg {
+    max-width: 100%;
+    min-width: 600px;
+    height: auto;
+    font-size: 16px !important;
+}
+
+/* Make text larger and more readable */
+.mermaidChart svg text {
+    font-size: 16px !important;
+    font-weight: 500 !important;
+}
+
+/* Improve node styling */
+.mermaidChart svg .node rect,
+.mermaidChart svg .node circle,
+.mermaidChart svg .node ellipse,
+.mermaidChart svg .node polygon {
+    stroke-width: 2px !important;
+}
+
+/* Improve edge styling */
+.mermaidChart svg .edgePath .path {
+    stroke-width: 2px !important;
+}
+
+.mermaidChart svg .edgeLabel {
+    font-size: 14px !important;
+    font-weight: 500 !important;
+}
+
+.loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    color: var(--text-secondary, #6b7280);
+    font-size: 0.9rem;
+}
+
+.spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--border-color, #e2e8f0);
+    border-top: 2px solid var(--secondary-color, #6366f1);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 0.5rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.error {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #dc2626;
+}
+
+.errorMessage {
+    text-align: left;
+}
+
+.errorMessage pre {
+    background: #f3f4f6;
+    padding: 0.75rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    overflow-x: auto;
+    margin: 0.5rem 0;
+}
+
+.chartCode {
+    background: #1f2937;
+    color: #f9fafb;
+    padding: 1rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    overflow-x: auto;
+    margin-top: 0.5rem;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .mermaidContainer {
+        background: var(--dark-background-secondary, #1e293b);
+        border-color: var(--dark-border-color, #334155);
+    }
+    
+    .loading {
+        color: var(--dark-text-secondary, #cbd5e1);
+    }
+    
+    .spinner {
+        border-color: var(--dark-border-color, #334155);
+        border-top-color: var(--secondary-color, #6366f1);
+    }
+    
+    .error {
+        background: #451a03;
+        border-color: #92400e;
+        color: #fbbf24;
+    }
+    
+    .errorMessage pre {
+        background: #374151;
+        color: #f3f4f6;
+    }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .mermaidContainer {
+        margin: 1rem 0;
+        padding: 0.75rem;
+    }
+    
+    .mermaidChart {
+        min-height: 150px;
+    }
+    
+    .loading {
+        min-height: 150px;
+        font-size: 0.8rem;
+    }
+}

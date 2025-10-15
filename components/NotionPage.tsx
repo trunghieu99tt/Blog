@@ -29,11 +29,10 @@ import { useFontChooser } from './FontChooser/useFontChooser';
 import Toolbox from './Toolbox';
 import InteractionButtons from './InteractionButtons';
 import { CustomHomePage } from './CustomHomePage';
-import { searchNotion } from 'lib/search-notion';
 
 const Code = dynamic(
     () =>
-        import('react-notion-x/build/third-party/code').then(async (m) => {
+        import('./MermaidCodeBlock').then(async (m) => {
             // additional prism syntaxes
             await Promise.all([
                 import('prismjs/components/prism-markup-templating.js'),
@@ -68,7 +67,7 @@ const Code = dynamic(
                 import('prismjs/components/prism-wasm.js'),
                 import('prismjs/components/prism-yaml.js')
             ]);
-            return m.Code;
+            return m.default;
         }),
     {
         ssr: false
@@ -220,7 +219,7 @@ export const NotionPage: React.FC<types.PageProps> = ({
                 defaultPageCoverPosition={config.defaultPageCoverPosition}
                 mapPageUrl={siteMapPageUrl}
                 mapImageUrl={mapNotionImageUrl}
-                searchNotion={searchNotion}
+                // searchNotion={searchNotion}
                 pageFooter={
                     <>
                         {interactionButtons}
