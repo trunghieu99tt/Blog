@@ -6,9 +6,14 @@ import { api, isPreviewImageSupportEnabled } from './config';
 import * as types from './types';
 import * as db from './db';
 
-function sha256(input: Buffer | string) {
-    const buffer = Buffer.isBuffer(input) ? input : Buffer.from(input);
-    return crypto.createHash('sha256').update(buffer).digest('hex');
+function sha256(input: Buffer | string): string {
+    const hash = crypto.createHash('sha256');
+    if (Buffer.isBuffer(input)) {
+        hash.update(input as any);
+    } else {
+        hash.update(input);
+    }
+    return hash.digest('hex');
 }
 
 export async function getPreviewImages(

@@ -19,9 +19,6 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "baseUrl": ".",
-    "typeRoots": [
-      "./node_modules/@types"
-    ],
     "incremental": true
   },
   "exclude": [

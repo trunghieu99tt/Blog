@@ -18,10 +18,11 @@ export const baseNotion = new NotionAPI({});
 
 export const getAllPages = async (): Promise<Block[]> => {
     try {
-        const response = await mySiteNotion.getPage(config.rootNotionPageId);
+        const response = await baseNotion.getPage(config.rootNotionPageId);
         const blocks = response?.block;
         return Object.values(blocks).map((block) => block.value);
     } catch (error) {
+        console.error(error);
         return [];
     }
 };
@@ -29,7 +30,7 @@ export const getAllPages = async (): Promise<Block[]> => {
 export async function getPage(pageId: string): Promise<ExtendedRecordMap> {
     let pages = null;
     if (removeDashes(pageId) === config.rootNotionPageId) {
-        pages = await mySiteNotion.getPage(pageId);
+        pages = await baseNotion.getPage(pageId);
     } else {
         pages = await baseNotion.getPage(pageId);
     }
