@@ -50,7 +50,7 @@ const Mermaid: React.FC<MermaidProps> = ({
                     startOnLoad: false,
                     theme: customConfig.theme || 'default',
                     securityLevel: 'loose',
-                    fontFamily: customConfig.fontFamily || 'inherit',
+                    fontFamily: customConfig.fontFamily || 'Space Grotesk',
                     fontSize: customConfig.fontSize || 18,
                     flowchart: {
                         useMaxWidth: true,
