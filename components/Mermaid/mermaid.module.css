@@ -41,10 +41,6 @@
     height: 120px !important;
 }
 
-.mermaidContainer svg .cluster rect {
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1)) !important;
-}
-
 .loading {
     display: flex;
     flex-direction: column;

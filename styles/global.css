@@ -237,3 +237,30 @@ body {
 .calendly-overlay .calendly-popup .calendly-popup-content {
     background-color: #fff !important;
 }
+
+/* Mermaid edge thickness overrides - must be global to affect SVG */
+svg .edge-thickness-normal {
+    stroke-width: 2.5px !important; /* was 1px, now 1px + 1.5px */
+}
+
+svg .edge-thickness-thick {
+    stroke-width: 5px !important; /* was 3.5px, now 3.5px + 1.5px */
+}
+
+svg .edge-thickness-invisible {
+    stroke-width: 0 !important; /* keep invisible as 0 */
+}
+
+/* Also increase default edge path stroke width */
+svg .edgePath .path {
+    stroke-width: 3.5px !important; /* was 2px, now 2px + 1.5px */
+}
+
+/* Increase arrowhead stroke width */
+svg .arrowheadPath {
+    stroke-width: 3.5px !important;
+}
+
+.cluster rect {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1)) !important;
+}
