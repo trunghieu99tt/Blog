@@ -57,8 +57,8 @@ const Mermaid: React.FC<MermaidProps> = ({
                         htmlLabels: true,
                         curve: customConfig.flowchart?.curve || 'basis',
                         padding: customConfig.flowchart?.padding || 20,
-                        nodeSpacing: customConfig.flowchart?.nodeSpacing,
-                        rankSpacing: customConfig.flowchart?.rankSpacing
+                        nodeSpacing: customConfig.flowchart?.nodeSpacing || 100,
+                        rankSpacing: customConfig.flowchart?.rankSpacing || 100
                     },
                     sequence: {
                         useMaxWidth: true,
@@ -77,7 +77,9 @@ const Mermaid: React.FC<MermaidProps> = ({
                     gitGraph: {
                         useMaxWidth: true
                     },
-                    themeVariables: customConfig.themeVariables || {}
+                    themeVariables: {
+                        ...customConfig.themeVariables
+                    }
                 };
 
                 // Apply chart-specific config

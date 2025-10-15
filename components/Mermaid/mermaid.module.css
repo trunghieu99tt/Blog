@@ -2,13 +2,12 @@
     margin: 2rem 0;
     padding: 1.5rem;
     border-radius: 12px;
-    background: var(--background-secondary, #f8fafc);
-    border: 1px solid var(--border-color, #e2e8f0);
     overflow-x: auto;
     text-align: center;
     min-height: 400px;
     width: 100%;
     position: relative;
+    font-weight: 600;
 }
 
 .styleButton {
@@ -36,43 +35,14 @@
     box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
 }
 
-.mermaidChart {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 400px;
-    width: 100%;
+.mermaidChart foreignObject {
+    overflow: visible !important;
+    min-width: 220px !important;
+    height: 120px !important;
 }
 
-.mermaidChart svg {
-    max-width: 100%;
-    min-width: 600px;
-    height: auto;
-    font-size: 16px !important;
-}
-
-/* Make text larger and more readable */
-.mermaidChart svg text {
-    font-size: 16px !important;
-    font-weight: 500 !important;
-}
-
-/* Improve node styling */
-.mermaidChart svg .node rect,
-.mermaidChart svg .node circle,
-.mermaidChart svg .node ellipse,
-.mermaidChart svg .node polygon {
-    stroke-width: 2px !important;
-}
-
-/* Improve edge styling */
-.mermaidChart svg .edgePath .path {
-    stroke-width: 2px !important;
-}
-
-.mermaidChart svg .edgeLabel {
-    font-size: 14px !important;
-    font-weight: 500 !important;
+.mermaidContainer svg .cluster rect {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1)) !important;
 }
 
 .loading {

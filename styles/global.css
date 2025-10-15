@@ -220,10 +220,6 @@ body {
     font-size: 90%;
 }
 
-.notion.notion-app {
-    font-weight: normal !important;
-}
-
 .notion-aside-table-of-contents .notion-table-of-contents-item {
     font-size: 80% !important;
 }
