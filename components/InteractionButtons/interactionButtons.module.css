@@ -97,10 +97,6 @@
     transform: scale(1);
 }
 
-.likeButton:hover {
-    border-color: #ef4444;
-}
-
 .likeButton.liked .likeButtonBgPane {
     opacity: 1;
     transform: scale(1);

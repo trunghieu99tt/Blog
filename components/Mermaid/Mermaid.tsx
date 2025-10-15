@@ -48,7 +48,7 @@ const Mermaid: React.FC<MermaidProps> = ({
                 // Initialize/reinitialize mermaid with current config
                 const mermaidConfig: any = {
                     startOnLoad: false,
-                    theme: customConfig.theme || 'default',
+                    theme: customConfig.theme || 'neutral',
                     securityLevel: 'loose',
                     fontFamily: customConfig.fontFamily || 'Space Grotesk',
                     fontSize: customConfig.fontSize || 18,
