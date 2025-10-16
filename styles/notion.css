@@ -10,6 +10,7 @@
 .notion {
     --notion-max-width: 1024px;
     --notion-header-height: 54px;
+    color: #000;
 }
 
 .notion-page {

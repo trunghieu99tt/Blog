@@ -81,6 +81,7 @@ export const CustomFont: React.FC<CustomFontProps> = ({ site, fontFamily }) => {
         const getFontSize = (fontFamily: string): string => {
             switch (fontFamily) {
                 case 'CMU Serif Roman':
+                    return '107.5%';
                 case 'CMU Typewriter':
                 case 'CMU Unicode Normal':
                     return '102.5%';
