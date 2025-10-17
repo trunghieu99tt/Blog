@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import mermaid from 'mermaid';
 import elkLayouts from '@mermaid-js/layout-elk';
 import styles from './mermaid.module.css';
@@ -8,6 +8,12 @@ interface MermaidProps {
     chart: string;
     className?: string;
     enableStylePanel?: boolean;
+}
+
+interface ZoomState {
+    scale: number;
+    translateX: number;
+    translateY: number;
 }
 
 const Mermaid: React.FC<MermaidProps> = ({
@@ -20,6 +26,16 @@ const Mermaid: React.FC<MermaidProps> = ({
     const [error, setError] = useState<string | null>(null);
     const [showStylePanel, setShowStylePanel] = useState(false);
     const [customConfig, setCustomConfig] = useState<MermaidConfig>({});
+    const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+    const [lightboxZoomState, setLightboxZoomState] = useState<ZoomState>({
+        scale: 1,
+        translateX: 0,
+        translateY: 0
+    });
+    const [isLightboxPanning, setIsLightboxPanning] = useState(false);
+    const [lightboxPanStart, setLightboxPanStart] = useState({ x: 0, y: 0 });
+    const [imageDataUrl, setImageDataUrl] = useState<string | null>(null);
+    const imageRef = useRef<HTMLImageElement>(null);
 
     useEffect(() => {
         let isMounted = true;
@@ -230,6 +246,262 @@ const Mermaid: React.FC<MermaidProps> = ({
         return config;
     };
 
+    // Apply zoom/pan transform to lightbox image
+    useEffect(() => {
+        if (isLightboxOpen && imageRef.current) {
+            imageRef.current.style.transform = `translate(${lightboxZoomState.translateX}px, ${lightboxZoomState.translateY}px) scale(${lightboxZoomState.scale})`;
+            imageRef.current.style.transformOrigin = 'center center';
+        }
+    }, [lightboxZoomState, isLightboxOpen]);
+
+    // Convert SVG to data URI for lightbox
+    const svgToDataUri = useCallback((): string | null => {
+        if (!ref.current) return null;
+
+        const svg = ref.current.querySelector('svg');
+        if (!svg) return null;
+
+        try {
+            // Clone the SVG to avoid modifying the original
+            const clonedSvg = svg.cloneNode(true) as SVGSVGElement;
+
+            // Get SVG dimensions
+            const bbox = svg.getBBox();
+            const viewBox = svg.viewBox.baseVal;
+            const width = viewBox.width || bbox.width || 800;
+            const height = viewBox.height || bbox.height || 600;
+
+            // Set explicit dimensions and ensure it's self-contained
+            clonedSvg.setAttribute('width', width.toString());
+            clonedSvg.setAttribute('height', height.toString());
+            clonedSvg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+
+            // Add white background
+            const rect = document.createElementNS(
+                'http://www.w3.org/2000/svg',
+                'rect'
+            );
+            rect.setAttribute('width', '100%');
+            rect.setAttribute('height', '100%');
+            rect.setAttribute('fill', 'white');
+            clonedSvg.insertBefore(rect, clonedSvg.firstChild);
+
+            // Serialize SVG to string
+            const svgData = new XMLSerializer().serializeToString(clonedSvg);
+
+            // Create data URI
+            const svgBase64 = btoa(unescape(encodeURIComponent(svgData)));
+            return `data:image/svg+xml;base64,${svgBase64}`;
+        } catch (error) {
+            console.error('Error converting SVG to data URI:', error);
+            return null;
+        }
+    }, []);
+
+    // Lightbox handlers
+    const openLightbox = useCallback(() => {
+        // Convert SVG to data URI
+        const imageUrl = svgToDataUri();
+        if (imageUrl) {
+            setImageDataUrl(imageUrl);
+            setIsLightboxOpen(true);
+            // Reset lightbox zoom when opening
+            setLightboxZoomState({
+                scale: 1,
+                translateX: 0,
+                translateY: 0
+            });
+            // Prevent body scroll
+            document.body.style.overflow = 'hidden';
+        }
+    }, [svgToDataUri]);
+
+    const closeLightbox = useCallback(() => {
+        setIsLightboxOpen(false);
+        setIsLightboxPanning(false);
+        setImageDataUrl(null);
+        // Restore body scroll
+        document.body.style.overflow = '';
+    }, []);
+
+    // Convert SVG to PNG using canvas (with fallback)
+    const svgToPng = useCallback(async (): Promise<string | null> => {
+        const svgDataUri = imageDataUrl || svgToDataUri();
+        if (!svgDataUri) return null;
+
+        try {
+            // Try to convert to PNG via canvas
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+
+                img.onload = () => {
+                    try {
+                        const canvas = document.createElement('canvas');
+                        const svg = ref.current?.querySelector('svg');
+                        const bbox = svg?.getBBox();
+                        const viewBox = svg?.viewBox.baseVal;
+                        const width = viewBox?.width || bbox?.width || 800;
+                        const height = viewBox?.height || bbox?.height || 600;
+
+                        const scale = 2; // Higher resolution
+                        canvas.width = width * scale;
+                        canvas.height = height * scale;
+
+                        const ctx = canvas.getContext('2d', {
+                            willReadFrequently: false
+                        });
+                        if (ctx) {
+                            ctx.scale(scale, scale);
+                            ctx.fillStyle = 'white';
+                            ctx.fillRect(0, 0, width, height);
+                            ctx.drawImage(img, 0, 0, width, height);
+                            resolve(canvas.toDataURL('image/png'));
+                        } else {
+                            resolve(null);
+                        }
+                    } catch (error) {
+                        console.warn(
+                            'Canvas conversion failed, will use SVG:',
+                            error
+                        );
+                        resolve(null);
+                    }
+                };
+
+                img.onerror = () => resolve(null);
+                img.src = svgDataUri;
+            });
+        } catch (error) {
+            console.warn('PNG conversion failed:', error);
+            return null;
+        }
+    }, [imageDataUrl, svgToDataUri]);
+
+    // Download diagram
+    const downloadDiagram = useCallback(async () => {
+        // Try PNG first, fallback to SVG
+        let downloadUrl = await svgToPng();
+        let filename = `mermaid-diagram-${Date.now()}.png`;
+
+        if (!downloadUrl) {
+            // Fallback to SVG
+            downloadUrl = svgToDataUri();
+            filename = `mermaid-diagram-${Date.now()}.svg`;
+        }
+
+        if (!downloadUrl) return;
+
+        const link = document.createElement('a');
+        link.download = filename;
+        link.href = downloadUrl;
+        link.click();
+    }, [svgToPng, svgToDataUri]);
+
+    // ESC key to close lightbox
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape' && isLightboxOpen) {
+                closeLightbox();
+            }
+        };
+
+        if (isLightboxOpen) {
+            document.addEventListener('keydown', handleKeyDown);
+        }
+
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [isLightboxOpen, closeLightbox]);
+
+    // Lightbox zoom handlers
+    const handleLightboxZoomIn = useCallback(() => {
+        setLightboxZoomState((prev) => ({
+            ...prev,
+            scale: Math.min(prev.scale * 1.2, 10) // Max zoom 10x in lightbox
+        }));
+    }, []);
+
+    const handleLightboxZoomOut = useCallback(() => {
+        setLightboxZoomState((prev) => ({
+            ...prev,
+            scale: Math.max(prev.scale / 1.2, 0.1)
+        }));
+    }, []);
+
+    const handleLightboxResetZoom = useCallback(() => {
+        setLightboxZoomState({
+            scale: 1,
+            translateX: 0,
+            translateY: 0
+        });
+    }, []);
+
+    // Lightbox wheel zoom
+    const handleLightboxWheel = useCallback(
+        (e: React.WheelEvent<HTMLDivElement>) => {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? 0.9 : 1.1;
+            setLightboxZoomState((prev) => ({
+                ...prev,
+                scale: Math.min(Math.max(prev.scale * delta, 0.1), 10)
+            }));
+        },
+        []
+    );
+
+    // Lightbox pan handlers
+    const handleLightboxMouseDown = useCallback(
+        (e: React.MouseEvent<HTMLDivElement>) => {
+            if (e.button === 0) {
+                setIsLightboxPanning(true);
+                setLightboxPanStart({ x: e.clientX, y: e.clientY });
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        },
+        []
+    );
+
+    const handleLightboxMouseMove = useCallback(
+        (e: React.MouseEvent<HTMLDivElement>) => {
+            if (isLightboxPanning) {
+                const dx = e.clientX - lightboxPanStart.x;
+                const dy = e.clientY - lightboxPanStart.y;
+                setLightboxZoomState((prev) => ({
+                    ...prev,
+                    translateX: prev.translateX + dx,
+                    translateY: prev.translateY + dy
+                }));
+                setLightboxPanStart({ x: e.clientX, y: e.clientY });
+            }
+        },
+        [isLightboxPanning, lightboxPanStart]
+    );
+
+    const handleLightboxMouseUp = useCallback(() => {
+        setIsLightboxPanning(false);
+    }, []);
+
+    const handleLightboxMouseLeave = useCallback(() => {
+        setIsLightboxPanning(false);
+    }, []);
+
+    const handleLightboxBackgroundClick = useCallback(
+        (e: React.MouseEvent<HTMLDivElement>) => {
+            // Only close if clicking directly on the background, not after dragging
+            if (
+                e.target === e.currentTarget &&
+                Math.abs(e.clientX - lightboxPanStart.x) < 5 &&
+                Math.abs(e.clientY - lightboxPanStart.y) < 5
+            ) {
+                closeLightbox();
+            }
+        },
+        [closeLightbox, lightboxPanStart]
+    );
+
     if (error) {
         return (
             <div
@@ -258,6 +530,26 @@ const Mermaid: React.FC<MermaidProps> = ({
     return (
         <>
             <div className={`${styles.mermaidContainer} ${className || ''}`}>
+                {/* Controls */}
+                <div className={styles.controls}>
+                    <button
+                        className={styles.controlButton}
+                        onClick={openLightbox}
+                        aria-label='Open in lightbox'
+                        title='Open in fullscreen'
+                    >
+                        ⛶
+                    </button>
+                    <button
+                        className={styles.controlButton}
+                        onClick={downloadDiagram}
+                        aria-label='Download diagram'
+                        title='Download as PNG/SVG'
+                    >
+                        ⬇
+                    </button>
+                </div>
+
                 {enableStylePanel && (
                     <button
                         className={styles.styleButton}
@@ -280,6 +572,87 @@ const Mermaid: React.FC<MermaidProps> = ({
                     style={{ display: isLoading ? 'none' : 'block' }}
                 />
             </div>
+
+            {/* Lightbox Modal */}
+            {isLightboxOpen && imageDataUrl && (
+                <div
+                    className={styles.lightbox}
+                    onClick={handleLightboxBackgroundClick}
+                >
+                    <div className={styles.lightboxContent}>
+                        {/* Lightbox Zoom Controls */}
+                        <div className={styles.lightboxZoomControls}>
+                            <button
+                                className={styles.lightboxButton}
+                                onClick={handleLightboxZoomIn}
+                                aria-label='Zoom in'
+                                title='Zoom in'
+                            >
+                                +
+                            </button>
+                            <button
+                                className={styles.lightboxButton}
+                                onClick={handleLightboxZoomOut}
+                                aria-label='Zoom out'
+                                title='Zoom out'
+                            >
+                                −
+                            </button>
+                            <button
+                                className={styles.lightboxButton}
+                                onClick={handleLightboxResetZoom}
+                                aria-label='Reset zoom'
+                                title='Reset zoom'
+                            >
+                                ⟲
+                            </button>
+                            <button
+                                className={styles.lightboxButton}
+                                onClick={downloadDiagram}
+                                aria-label='Download diagram'
+                                title='Download as PNG'
+                            >
+                                ⬇
+                            </button>
+                            <span className={styles.lightboxZoomLevel}>
+                                {Math.round(lightboxZoomState.scale * 100)}%
+                            </span>
+                        </div>
+
+                        {/* Close Button */}
+                        <button
+                            className={styles.lightboxClose}
+                            onClick={closeLightbox}
+                            aria-label='Close lightbox'
+                            title='Close (ESC)'
+                        >
+                            ✕
+                        </button>
+
+                        {/* Diagram Image */}
+                        <div
+                            className={styles.lightboxDiagram}
+                            style={{
+                                cursor: isLightboxPanning ? 'grabbing' : 'grab'
+                            }}
+                            onWheel={handleLightboxWheel}
+                            onMouseDown={handleLightboxMouseDown}
+                            onMouseMove={handleLightboxMouseMove}
+                            onMouseUp={handleLightboxMouseUp}
+                            onMouseLeave={handleLightboxMouseLeave}
+                        >
+                            <img
+                                ref={imageRef}
+                                src={imageDataUrl}
+                                alt='Mermaid Diagram'
+                                className={styles.lightboxImage}
+                                draggable={false}
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {enableStylePanel && showStylePanel && (
                 <MermaidStylePanel
                     config={customConfig}

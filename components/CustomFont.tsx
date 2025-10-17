@@ -86,8 +86,7 @@ export const CustomFont: React.FC<CustomFontProps> = ({ site, fontFamily }) => {
                 case 'CMU Unicode Normal':
                     return '102.5%';
                 case 'Source Code Pro':
-                case 'TeX Gyre Bonum Regular':
-                    return '90%';
+                    return '95%';
                 default:
                     return '100%';
             }

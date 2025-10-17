@@ -1,7 +1,7 @@
 .mermaidContainer {
     margin: 2rem 0;
     border-radius: 12px;
-    overflow-x: auto;
+    overflow: hidden;
     text-align: center;
     min-height: 400px;
     width: 100%;
@@ -9,6 +9,10 @@
     font-weight: 600;
     background: var(--background-secondary, #f8fafc);
     padding: 1.5rem;
+}
+
+.mermaidChart {
+    overflow: visible;
 }
 
 .styleButton {
@@ -34,6 +38,44 @@
     background: var(--primary-dark, #357abd);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+}
+
+/* Simple Controls */
+.controls {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+}
+
+.controlButton {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    color: var(--text-primary, #1f2937);
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.controlButton:hover {
+    background: var(--secondary-color, #6366f1);
+    color: white;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.controlButton:active {
+    transform: translateY(0) scale(0.98);
 }
 
 .mermaidChart foreignObject {
@@ -96,11 +138,155 @@
     margin-top: 0.5rem;
 }
 
+/* Lightbox Styles */
+.lightbox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(8px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.lightboxContent {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lightboxDiagram {
+    max-width: 100%;
+    max-height: 100%;
+    overflow: visible;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lightboxImage {
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+    transition: transform 0.1s ease-out;
+    pointer-events: auto;
+}
+
+.lightboxZoomControls {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 10000;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border-radius: 8px;
+    padding: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.lightboxButton {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 6px;
+    background: var(--background, #ffffff);
+    color: var(--text-primary, #1f2937);
+    font-size: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.lightboxButton:hover {
+    background: var(--secondary-color, #6366f1);
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0 2px 6px rgba(99, 102, 241, 0.3);
+}
+
+.lightboxButton:active {
+    transform: scale(0.95);
+}
+
+.lightboxZoomLevel {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary, #6b7280);
+    text-align: center;
+    padding: 4px 0;
+    user-select: none;
+}
+
+.lightboxClose {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 48px;
+    height: 48px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--text-primary, #1f2937);
+    font-size: 24px;
+    font-weight: 300;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    z-index: 10000;
+}
+
+.lightboxClose:hover {
+    background: #ef4444;
+    color: white;
+    transform: scale(1.1) rotate(90deg);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+}
+
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
     .mermaidContainer {
         background: var(--dark-background-secondary, #1e293b);
         border-color: var(--dark-border-color, #334155);
+    }
+    
+    .controlButton {
+        background: rgba(30, 41, 59, 0.95);
+        color: var(--dark-text-primary, #f8fafc);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    .controlButton:hover {
+        background: var(--secondary-color, #6366f1);
+        color: white;
     }
     
     .loading {
@@ -122,6 +308,34 @@
         background: #374151;
         color: #f3f4f6;
     }
+    
+    .lightboxZoomControls {
+        background: rgba(30, 41, 59, 0.95);
+    }
+    
+    .lightboxButton {
+        background: var(--dark-background-tertiary, #334155);
+        color: var(--dark-text-primary, #f8fafc);
+    }
+    
+    .lightboxButton:hover {
+        background: var(--secondary-color, #6366f1);
+        color: white;
+    }
+    
+    .lightboxZoomLevel {
+        color: var(--dark-text-secondary, #cbd5e1);
+    }
+    
+    .lightboxClose {
+        background: rgba(30, 41, 59, 0.95);
+        color: var(--dark-text-primary, #f8fafc);
+    }
+    
+    .lightboxClose:hover {
+        background: #ef4444;
+        color: white;
+    }
 }
 
 /* Responsive design */
@@ -138,5 +352,49 @@
     .loading {
         min-height: 150px;
         font-size: 0.8rem;
+    }
+    
+    .controls {
+        gap: 6px;
+    }
+    
+    .controlButton {
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+    }
+    
+    .styleButton {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+    
+    .lightbox {
+        padding: 1rem;
+    }
+    
+    .lightboxZoomControls {
+        top: 10px;
+        left: 10px;
+        padding: 6px;
+        gap: 6px;
+    }
+    
+    .lightboxButton {
+        width: 32px;
+        height: 32px;
+        font-size: 18px;
+    }
+    
+    .lightboxZoomLevel {
+        font-size: 11px;
+    }
+    
+    .lightboxClose {
+        top: 10px;
+        right: 10px;
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
     }
 }
