@@ -13,6 +13,10 @@
     color: #000;
 }
 
+.dark-mode .notion {
+    color: var(--fg-color);
+}
+
 .notion-page {
     padding-bottom: calc(max(5vh, 32px)) !important;
     line-height: 1.4;
