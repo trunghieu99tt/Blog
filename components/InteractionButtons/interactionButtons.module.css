@@ -152,7 +152,7 @@
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 2;
+    z-index: 3;
     color: #ef4444;
     transition: all 0.2s ease;
 }
@@ -163,7 +163,7 @@
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 2;
+    z-index: 1;
     color: #ef4444;
     transition: all 0.2s ease;
 }

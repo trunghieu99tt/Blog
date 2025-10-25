@@ -13,7 +13,8 @@ const GOOGLE_FONTS = [
     'Poppins',
     'Roboto',
     'Space Grotesk',
-    'Source Code Pro'
+    'Source Code Pro',
+    'Crimson Text'
 ];
 
 // Keep track of loaded fonts to prevent reloading
@@ -81,6 +82,7 @@ export const CustomFont: React.FC<CustomFontProps> = ({ site, fontFamily }) => {
         const getFontSize = (fontFamily: string): string => {
             switch (fontFamily) {
                 case 'CMU Serif Roman':
+                case 'Crimson Text':
                     return '107.5%';
                 case 'CMU Typewriter':
                 case 'CMU Unicode Normal':

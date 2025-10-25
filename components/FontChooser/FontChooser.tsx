@@ -69,6 +69,12 @@ const FONT_OPTIONS: FontOption[] = [
         displayName: 'Roboto',
         googleFont: true,
         preview: 'The quick brown fox jumps over the lazy dog'
+    },
+    {
+        name: 'Crimson Text',
+        displayName: 'Crimson Text',
+        googleFont: true,
+        preview: 'The quick brown fox jumps over the lazy dog'
     }
 ];
 
