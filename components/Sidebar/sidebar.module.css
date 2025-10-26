@@ -88,6 +88,38 @@
     font-weight: bold;
 }
 
+.tagName {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tagCount {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    background: var(--fg-color-0);
+    border-radius: 9px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--fg-color);
+    margin-left: 4px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.tagSelected .tagCount {
+    background: rgba(255, 255, 255, 0.3);
+    color: #000;
+}
+
+:global(.dark-mode) .tagCount {
+    color: #000
+}
+
 .tag:hover {
     background-color: var(--fg-color-4);
     color: white;
@@ -293,8 +325,7 @@
 }
 
 :global(.dark-mode) .tag {
-    color: #000 !important;
-    filter: brightness(4);
+    color: #fff !important;
 }
 
 :global(.dark-mode) .tag:hover {

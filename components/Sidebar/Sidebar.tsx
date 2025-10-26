@@ -20,6 +20,7 @@ interface SidebarProps {
     onClearFilters: () => void;
     getTagBackgroundColor: (color: string) => string;
     getTagTextColor: (color: string) => string;
+    tagCounts?: Record<string, number>;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -32,7 +33,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
     onTagToggle,
     onClearFilters,
     getTagBackgroundColor,
-    getTagTextColor
+    getTagTextColor,
+    tagCounts
 }) => {
     const hasActiveFilters = selectedMonth || selectedTags.length > 0;
 
@@ -52,6 +54,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
     const sortedYears = Object.keys(monthsByYear).sort((a, b) =>
         b.localeCompare(a)
     );
+
+    // Sort tags by count in descending order
+    const sortedTags = React.useMemo(() => {
+        return [...tagsWithColors].sort((a, b) => {
+            const countA = tagCounts?.[a.name] || 0;
+            const countB = tagCounts?.[b.name] || 0;
+            return countB - countA; // Descending order
+        });
+    }, [tagsWithColors, tagCounts]);
 
     return (
         <aside className={styles.sidebar}>
@@ -73,7 +84,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     <div className={styles.filterSection}>
                         <h3 className={styles.filterTitle}>Tags</h3>
                         <div className={styles.tagGrid}>
-                            {tagsWithColors.map((tag) => {
+                            {sortedTags.map((tag) => {
                                 const isSelected = selectedTags.includes(
                                     tag.name
                                 );
@@ -99,7 +110,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                                 : undefined
                                         }
                                     >
-                                        {tag.name}
+                                        <span className={styles.tagName}>
+                                            {tag.name}
+                                        </span>
+                                        {tagCounts &&
+                                            tagCounts[tag.name] !==
+                                                undefined && (
+                                                <span
+                                                    className={styles.tagCount}
+                                                >
+                                                    {tagCounts[tag.name]}
+                                                </span>
+                                            )}
                                         {isSelected && (
                                             <span className={styles.checkmark}>
                                                 ✓

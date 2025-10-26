@@ -108,6 +108,17 @@ export const CustomHomePage: React.FC<CustomHomePageProps> = ({
         [posts]
     );
 
+    // Calculate tag counts
+    const tagCounts = useMemo(() => {
+        const counts: Record<string, number> = {};
+        posts.forEach((post) => {
+            post.tags.forEach((tag) => {
+                counts[tag.name] = (counts[tag.name] || 0) + 1;
+            });
+        });
+        return counts;
+    }, [posts]);
+
     // Filter posts based on search, month, and tags
     const filteredPosts = useMemo(() => {
         return posts.filter((post) => {
@@ -185,16 +196,7 @@ export const CustomHomePage: React.FC<CustomHomePageProps> = ({
                     )}
                     <main className={styles.content}>
                         <div className={styles.mobileControls}>
-                            <div className={styles.resultsInfo}>
-                                <p className={styles.resultsCount}>
-                                    {filteredPosts.length} post
-                                    {filteredPosts.length !== 1 ? 's' : ''}
-                                    {(selectedMonth ||
-                                        selectedTags.length > 0 ||
-                                        searchQuery) &&
-                                        ' found'}
-                                </p>
-                            </div>
+                            <div className={styles.resultsInfo}></div>
                             <button
                                 className={styles.mobileFilterToggle}
                                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -203,6 +205,14 @@ export const CustomHomePage: React.FC<CustomHomePageProps> = ({
                             </button>
                         </div>
 
+                        <p className={styles.resultsCount}>
+                            {filteredPosts.length} post
+                            {filteredPosts.length !== 1 ? 's' : ''}
+                            {(selectedMonth ||
+                                selectedTags.length > 0 ||
+                                searchQuery) &&
+                                ' found'}
+                        </p>
                         <BlogGrid posts={filteredPosts} />
                     </main>
 
@@ -238,6 +248,7 @@ export const CustomHomePage: React.FC<CustomHomePageProps> = ({
                             onClearFilters={handleClearFilters}
                             getTagBackgroundColor={getTagBackgroundColor}
                             getTagTextColor={getTagTextColor}
+                            tagCounts={tagCounts}
                         />
                     </aside>
                 </div>

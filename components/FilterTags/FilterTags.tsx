@@ -6,13 +6,15 @@ interface FilterTagsProps {
     selectedTags: string[];
     onToggleTag: (tag: string) => void;
     onClearAll: () => void;
+    tagCounts?: Record<string, number>;
 }
 
 export const FilterTags: React.FC<FilterTagsProps> = ({
     tags,
     selectedTags,
     onToggleTag,
-    onClearAll
+    onClearAll,
+    tagCounts
 }) => {
     if (tags.length === 0) {
         return null;
@@ -42,7 +44,12 @@ export const FilterTags: React.FC<FilterTagsProps> = ({
                             }`}
                             onClick={() => onToggleTag(tag)}
                         >
-                            {tag}
+                            <span className={styles.tagName}>{tag}</span>
+                            {tagCounts && tagCounts[tag] !== undefined && (
+                                <span className={styles.tagCount}>
+                                    {tagCounts[tag]}
+                                </span>
+                            )}
                             {isSelected && (
                                 <span className={styles.checkmark}>✓</span>
                             )}

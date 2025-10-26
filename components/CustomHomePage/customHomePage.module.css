@@ -271,6 +271,27 @@
     margin: 0;
 }
 
+/* Results Count */
+.resultsCount {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: #6b7280;
+    margin: 0 0 1.5rem 0;
+    padding: 0.75rem 1rem;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
+    border: 1px solid rgba(99, 102, 241, 0.15);
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+
+.resultsCount::before {
+    content: '📊';
+    font-size: 1rem;
+}
+
 /* Dark mode support - comprehensive dark mode styling */
 :global(.dark-mode) .homePageContainer {
     background: #111827;
@@ -331,19 +352,17 @@
 }
 
 :global(.dark-mode) .cardTag {
-    opacity: 0.9;
-    color: #000 !important;
-    filter: brightness(4);
+    color: #fff !important;
 }
 
 :global(.dark-mode) .blogCard:hover .cardTag {
-    opacity: 1;
     transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 :global(.dark-mode) .resultsCount {
-    color: #9ca3af;
+    color: #d1d5db;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+    border-color: rgba(99, 102, 241, 0.3);
 }
 
 :global(.dark-mode) .mobileFilterToggle {
