@@ -12,83 +12,87 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         const recordMap = await getPage(rootNotionPageId);
 
         // Extract all posts from the collection
+        // collection_query structure: { [collectionId]: { [collectionViewId]: { blockIds, ... } } }
         const posts: types.iPost[] = [];
         const collectionIds = Object.keys(recordMap.collection || {});
 
         for (const collectionId of collectionIds) {
             const collection = recordMap.collection[collectionId]?.value;
-            const collectionViewIds = Object.keys(
-                recordMap.collection_query || {}
-            ).filter((id) => id.includes(collectionId));
+            const collectionQueryData =
+                recordMap.collection_query?.[collectionId];
+            let blockIds: string[] = [];
 
-            for (const viewId of collectionViewIds) {
-                const collectionView = recordMap.collection_query[viewId];
-                const blockIds = collectionView?.[collectionId]?.blockIds || [];
+            if (collectionQueryData) {
+                for (const viewId of Object.keys(collectionQueryData)) {
+                    const viewData = collectionQueryData[viewId];
+                    const ids =
+                        viewData?.blockIds ||
+                        viewData?.collection_group_results?.blockIds ||
+                        [];
+                    blockIds = [...new Set([...blockIds, ...ids])];
+                }
+            }
 
-                for (const blockId of blockIds) {
-                    const block = recordMap.block[blockId]?.value;
+            for (const blockId of blockIds) {
+                const raw = (recordMap.block as any)[blockId];
+                const block = raw?.value?.value ?? raw?.value;
 
-                    if (block && block.type === 'page') {
-                        const properties = block.properties || {};
-                        const schema = collection?.schema || {};
+                if (block && block.type === 'page') {
+                    const properties = block.properties || {};
+                    const schema = collection?.schema || {};
 
-                        // Extract post data from properties
-                        const getName = (props: any) => {
-                            return props?.title?.[0]?.[0] || '';
-                        };
+                    const getName = (props: any) => {
+                        return props?.title?.[0]?.[0] || '';
+                    };
 
-                        const getProperty = (propertyName: string) => {
-                            const schemaEntry = Object.entries(schema).find(
-                                ([, value]: any) => value.name === propertyName
-                            );
-                            if (!schemaEntry) return null;
-                            const propertyId = schemaEntry[0];
-                            return properties[propertyId];
-                        };
+                    const getProperty = (propertyName: string) => {
+                        const schemaEntry = Object.entries(schema).find(
+                            ([, value]: any) => value.name === propertyName
+                        );
+                        if (!schemaEntry) return null;
+                        const propertyId = schemaEntry[0];
+                        return properties[propertyId];
+                    };
 
-                        const getTextProperty = (propertyName: string) => {
-                            const prop = getProperty(propertyName);
-                            return prop?.[0]?.[0] || '';
-                        };
+                    const getTextProperty = (propertyName: string) => {
+                        const prop = getProperty(propertyName);
+                        return prop?.[0]?.[0] || '';
+                    };
 
-                        const getMultiSelectProperty = (
-                            propertyName: string
-                        ) => {
-                            const prop = getProperty(propertyName);
-                            return prop?.[0]?.[0] || '';
-                        };
+                    const getMultiSelectProperty = (propertyName: string) => {
+                        const prop = getProperty(propertyName);
+                        return prop?.[0]?.[0] || '';
+                    };
 
-                        const getDateProperty = (propertyName: string) => {
-                            const prop = getProperty(propertyName);
-                            const dateValue = prop?.[0]?.[1]?.[0]?.[1];
-                            return dateValue?.start_date || '';
-                        };
+                    const getDateProperty = (propertyName: string) => {
+                        const prop = getProperty(propertyName);
+                        const dateValue = prop?.[0]?.[1]?.[0]?.[1];
+                        return dateValue?.start_date || '';
+                    };
 
-                        const getCheckboxProperty = (propertyName: string) => {
-                            const prop = getProperty(propertyName);
-                            return prop?.[0]?.[0] === 'Yes';
-                        };
+                    const getCheckboxProperty = (propertyName: string) => {
+                        const prop = getProperty(propertyName);
+                        return prop?.[0]?.[0] === 'Yes';
+                    };
 
-                        const post: types.iPost = {
-                            id: blockId,
-                            name: getName(properties),
-                            tag:
-                                getMultiSelectProperty('Tag') ||
-                                getTextProperty('Tag'),
-                            published: getCheckboxProperty('Published'),
-                            date:
-                                getDateProperty('Date') ||
-                                getDateProperty('Published'),
-                            slug: getTextProperty('Slug'),
-                            Author: [],
-                            preview: getTextProperty('Preview'),
-                            views: 0
-                        };
+                    const post: types.iPost = {
+                        id: blockId,
+                        name: getName(properties),
+                        tag:
+                            getMultiSelectProperty('Tag') ||
+                            getTextProperty('Tag'),
+                        published: getCheckboxProperty('Published'),
+                        date:
+                            getDateProperty('Date') ||
+                            getDateProperty('Published'),
+                        slug: getTextProperty('Slug'),
+                        Author: [],
+                        preview: getTextProperty('Preview'),
+                        views: 0
+                    };
 
-                        // Only include published posts
-                        if (post.published && post.name) {
-                            posts.push(post);
-                        }
+                    if (post.published && post.name) {
+                        posts.push(post);
                     }
                 }
             }

@@ -1,6 +1,32 @@
 import { ExtendedRecordMap } from 'notion-types';
+import { parsePageId, getPageProperty } from 'notion-utils';
 import * as types from './types';
 import * as config from './config';
+
+const normalizeId = (id: string) => parsePageId(id, { uuid: false }) || id;
+
+/** Notion tag colors - deterministic assignment when schema is unavailable */
+const NOTION_TAG_COLORS = [
+    'gray',
+    'brown',
+    'orange',
+    'yellow',
+    'green',
+    'blue',
+    'purple',
+    'pink',
+    'red',
+    'teal'
+] as const;
+
+function getColorForTag(name: string): string {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+        hash = (hash << 5) - hash + name.charCodeAt(i);
+        hash |= 0;
+    }
+    return NOTION_TAG_COLORS[Math.abs(hash) % NOTION_TAG_COLORS.length];
+}
 
 export interface BlogTag {
     name: string;
@@ -20,6 +46,27 @@ export interface BlogPost {
 }
 
 /**
+ * Recursively extract blockIds from notion's reducer results (handles nested/grouped structures)
+ */
+function extractBlockIdsFromReducerResults(obj: any): string[] {
+    if (!obj || typeof obj !== 'object') return [];
+
+    if (Array.isArray(obj.blockIds)) {
+        return obj.blockIds;
+    }
+
+    const ids: string[] = [];
+    for (const value of Object.values(obj)) {
+        if (Array.isArray(value)) {
+            ids.push(...value);
+        } else if (value && typeof value === 'object') {
+            ids.push(...extractBlockIdsFromReducerResults(value));
+        }
+    }
+    return ids;
+}
+
+/**
  * Extract blog posts from Notion's recordMap (same data structure that react-notion-x uses)
  */
 export function extractPostsFromRecordMap(
@@ -28,81 +75,96 @@ export function extractPostsFromRecordMap(
 ): BlogPost[] {
     const posts: BlogPost[] = [];
 
-    // Get all collections from recordMap
-    const collectionIds = Object.keys(recordMap.collection || {});
+    // Get collection IDs from both collection and collection_query (they may differ)
+    let collectionIds = [
+        ...new Set([
+            ...Object.keys(recordMap.collection || {}),
+            ...Object.keys(recordMap.collection_query || {})
+        ])
+    ];
+
+    // Fallback: discover from blocks if neither source has data
+    if (collectionIds.length === 0 && recordMap.block) {
+        const discoveredIds = new Set<string>();
+        for (const blockEntry of Object.values(recordMap.block)) {
+            const block = (blockEntry as any)?.value;
+            if (block) {
+                const cid =
+                    block.collection_id || block.format?.collection_pointer?.id;
+                if (cid) {
+                    discoveredIds.add(cid);
+                }
+            }
+        }
+        collectionIds = Array.from(discoveredIds);
+    }
 
     for (const collectionId of collectionIds) {
-        const collection = recordMap.collection[collectionId]?.value;
+        // collection_query structure: { [collectionId]: { [collectionViewId]: reducerResults } }
+        // notion-client stores collectionData.result?.reducerResults (nested structure)
+        const collectionQueryData = recordMap.collection_query?.[collectionId];
+        let blockIds: string[] = [];
 
-        // Get collection views (this is what determines the order and filtering)
-        const collectionViewIds = Object.keys(
-            recordMap.collection_query || {}
-        ).filter((id) => id.includes(collectionId));
+        if (collectionQueryData) {
+            for (const viewId of Object.keys(collectionQueryData)) {
+                const viewData = collectionQueryData[viewId];
+                const ids =
+                    viewData?.blockIds ||
+                    viewData?.collection_group_results?.blockIds ||
+                    viewData?.['results:relation:uncategorized']?.blockIds ||
+                    extractBlockIdsFromReducerResults(viewData);
+                blockIds = [...new Set([...blockIds, ...ids])];
+            }
+        }
 
-        for (const viewId of collectionViewIds) {
-            const collectionView = recordMap.collection_query[viewId];
+        if (blockIds.length === 0) {
+            // Fallback: find blocks by parent_id when collection_query is empty
+            const allBlockIds = Object.keys(recordMap.block || {});
 
-            const blockIds = collectionView?.[collectionId]?.blockIds || [];
+            for (const blockId of allBlockIds) {
+                const raw = (recordMap.block as any)[blockId];
+                const block = raw?.value?.value ?? raw?.value;
 
-            // If no blockIds from collection_query, try to find blocks directly
-            if (blockIds.length === 0) {
-                // Search through all blocks to find pages that belong to this collection
-                const allBlockIds = Object.keys(recordMap.block || {});
+                if (
+                    block &&
+                    block.type === 'page' &&
+                    block.parent_table === 'collection' &&
+                    normalizeId(block.parent_id) === normalizeId(collectionId)
+                ) {
+                    const post = extractPostFromBlock(
+                        block,
+                        recordMap,
+                        collectionId
+                    );
 
-                for (const blockId of allBlockIds) {
-                    const block = recordMap.block[blockId]?.value;
-
-                    if (
-                        block &&
-                        block.type === 'page' &&
-                        block.parent_table === 'collection' &&
-                        block.parent_id === collectionId
-                    ) {
-                        const properties = block.properties || {};
-                        const schema = collection?.schema || {};
-
-                        // Extract post data using the same logic as react-notion-x
-                        const post = extractPostFromBlock(
-                            block,
-                            properties,
-                            schema
-                        );
-
-                        if (post) {
-                            posts.push(post);
-                        }
+                    if (post) {
+                        posts.push(post);
                     }
                 }
-            } else {
-                // Use the blockIds from collection_query
-                for (const blockId of blockIds) {
-                    const block = recordMap.block[blockId]?.value;
+            }
+        } else {
+            for (const blockId of blockIds) {
+                const raw = (recordMap.block as any)[blockId];
+                const block = raw?.value?.value ?? raw?.value;
+                if (
+                    block &&
+                    block.type === 'page' &&
+                    block.parent_table === 'collection'
+                ) {
+                    const post = extractPostFromBlock(
+                        block,
+                        recordMap,
+                        collectionId
+                    );
 
-                    if (
-                        block &&
-                        block.type === 'page' &&
-                        block.parent_table === 'collection'
-                    ) {
-                        const properties = block.properties || {};
-                        const schema = collection?.schema || {};
-
-                        // Extract post data using the same logic as react-notion-x
-                        const post = extractPostFromBlock(
-                            block,
-                            properties,
-                            schema
-                        );
-
-                        if (post) {
-                            posts.push(post);
-                        }
+                    if (post) {
+                        posts.push(post);
                     }
                 }
             }
         }
     }
 
-    // Sort by date (newest first)
     return posts.sort((a, b) => {
         if (!a.date) return 1;
         if (!b.date) return -1;
@@ -110,157 +172,225 @@ export function extractPostsFromRecordMap(
     });
 }
 
+function getPagePropertyAny(
+    block: any,
+    recordMap: ExtendedRecordMap,
+    collectionId: string,
+    names: string[]
+): any {
+    // getPageProperty looks up collection by block.parent_id - try multiple ID formats
+    const tryLookup = (parentId: string) => {
+        if (!parentId) return null;
+        const blockForLookup = { ...block, parent_id: parentId };
+        for (const name of names) {
+            try {
+                const val = getPageProperty(name, blockForLookup, recordMap);
+                if (val != null && val !== '') {
+                    if (Array.isArray(val) && val.length === 0) continue;
+                    return val;
+                }
+            } catch {
+                /* ignore */
+            }
+        }
+        return null;
+    };
+    const idsToTry = [
+        block.parent_id,
+        collectionId,
+        normalizeId(collectionId),
+        normalizeId(block.parent_id)
+    ].filter(Boolean);
+    for (const id of [...new Set(idsToTry)]) {
+        const result = tryLookup(id);
+        if (result != null) return result;
+    }
+    return null;
+}
+
+function getTextFromProp(prop: any): string {
+    if (!prop) return '';
+    if (Array.isArray(prop)) {
+        return prop.reduce(
+            (p: string, c: any) =>
+                p + (c?.[0] !== '⁍' && c?.[0] !== '‣' ? c?.[0] || '' : ''),
+            ''
+        );
+    }
+    return String(prop);
+}
+
+/** Infer property values when schema is not available (notion-client often omits it) */
+function inferPropertiesFromBlock(properties: Record<string, any>): {
+    description: string | null;
+    tags: BlogTag[];
+    date: string;
+} {
+    let description: string | null = null;
+    const tags: BlogTag[] = [];
+    let date = '';
+
+    for (const [key, prop] of Object.entries(properties)) {
+        if (key === 'title' || !prop) continue;
+
+        const firstRow = Array.isArray(prop) ? prop[0] : null;
+        if (!firstRow) continue;
+
+        // Date: prop[0][1][0][1] has start_date (e.g. THTS)
+        const dateObj = firstRow?.[1]?.[0]?.[1];
+        if (dateObj && typeof dateObj === 'object' && dateObj.start_date) {
+            date = dateObj.start_date;
+            continue;
+        }
+
+        // Simple text: prop[0][0] is string
+        const textVal =
+            typeof firstRow[0] === 'string'
+                ? firstRow[0]
+                : getTextFromProp(prop);
+        if (!textVal) continue;
+
+        // Multi-select tags: comma-separated, each part is short (e.g. "Paper Notes,Distributed System,Backend")
+        const parts = textVal.split(',').map((s: string) => s.trim());
+        const looksLikeTags =
+            parts.length > 1 &&
+            parts.every((p) => p.length > 0 && p.length < 50);
+
+        if (looksLikeTags && tags.length === 0) {
+            tags.push(
+                ...parts.map((name) => ({
+                    name,
+                    color: getColorForTag(name)
+                }))
+            );
+        } else if (textVal.length > 20 && !description) {
+            // Description: longer text, take first non-tag-like text we find
+            description = textVal;
+        }
+    }
+
+    return { description, tags, date };
+}
+
 function extractPostFromBlock(
     block: any,
-    properties: any,
-    schema: any
+    recordMap: ExtendedRecordMap,
+    collectionId: string
 ): BlogPost | null {
-    // Helper functions to extract properties (same as in your API)
-    const getName = (props: any) => {
-        return props?.title?.[0]?.[0] || '';
-    };
+    const properties = block.properties || {};
+    const schema =
+        (recordMap.collection as any)?.[collectionId]?.value?.value?.schema ||
+        (recordMap.collection as any)?.[collectionId]?.value?.schema ||
+        {};
 
-    const getProperty = (propertyName: string) => {
-        const schemaEntry = Object.entries(schema).find(
-            ([, value]: any) => value.name === propertyName
-        );
-        if (!schemaEntry) return null;
-        const propertyId = schemaEntry[0];
-        return properties[propertyId];
-    };
+    const getTextContent = (text: any): string => getTextFromProp(text);
 
-    const getTextProperty = (propertyName: string) => {
-        const prop = getProperty(propertyName);
-        return prop?.[0]?.[0] || '';
-    };
-
-    const getMultiSelectPropertyWithColors = (propertyName: string) => {
-        const prop = getProperty(propertyName);
-        if (!prop || !Array.isArray(prop)) return [];
-
-        return prop
-            .map((item: any) => {
-                if (Array.isArray(item)) {
-                    const name = item[0];
-                    let color = 'default';
-
-                    if (item.length > 1) {
-                        if (item[1] && Array.isArray(item[1])) {
-                            color = item[1][0]?.[1] || item[1][1] || 'default';
-                        } else if (typeof item[1] === 'string') {
-                            color = item[1];
-                        }
-                    }
-
-                    return { name, color };
-                } else if (typeof item === 'string') {
-                    return { name: item, color: 'default' };
-                }
-
-                return null;
-            })
-            .filter(Boolean);
-    };
-
-    const getDateProperty = (propertyName: string) => {
-        const prop = getProperty(propertyName);
-        const dateValue = prop?.[0]?.[1]?.[0]?.[1];
-        return dateValue?.start_date || '';
-    };
-
-    const getCheckboxProperty = (propertyName: string) => {
-        const prop = getProperty(propertyName);
-        return prop?.[0]?.[0] === 'Yes';
-    };
-
-    // Extract data
-    const title = getName(properties);
+    const title = getTextContent(properties?.title);
     if (!title) return null;
 
-    // Try different property names for description
-    const description =
-        getTextProperty('Preview') ||
-        getTextProperty('Description') ||
-        getTextProperty('Summary') ||
-        getTextProperty('Excerpt');
-
-    // Try different property names for tags with colors
+    // Try getPageProperty first (requires schema), then infer from structure
+    let description = getPagePropertyAny(block, recordMap, collectionId, [
+        'Preview',
+        'Description',
+        'Summary',
+        'Excerpt'
+    ]);
     let tags: BlogTag[] = [];
+    let dateValue = getPagePropertyAny(block, recordMap, collectionId, [
+        'Date',
+        'Published',
+        'Created',
+        'Publish Date'
+    ]);
 
-    // Find the actual tag property by looking at schema
-    let tagPropertyId = null;
-    let tagSchema = null;
-
-    // Look through schema to find multi-select properties
-    for (const [propId, propSchema] of Object.entries(schema)) {
-        const schemaValue = propSchema as any;
-        if (schemaValue?.type === 'multi_select') {
-            tagPropertyId = propId;
-            tagSchema = schemaValue;
-            break;
-        }
-    }
-
-    // Extract tags using the schema information
-    let multiSelectTags: BlogTag[] = [];
-
-    if (tagPropertyId && tagSchema) {
-        // Get the property value (array of selected tag IDs)
-        const selectedTagIds = properties[tagPropertyId]?.[0]?.[0]?.split(',');
-
-        if (selectedTagIds && Array.isArray(selectedTagIds)) {
-            // Map selected tag IDs to tag objects using schema options
-            multiSelectTags = selectedTagIds
-                .map((tagId: string) => {
-                    // Find the tag in schema options
-                    const tagOption = tagSchema.options?.find(
-                        (option: any) => option?.value === tagId
+    if (schema && Object.keys(schema).length > 0) {
+        // Schema available: use schema-based fallback
+        const getPropertyBySchema = (name: string) => {
+            const entry = Object.entries(schema).find(
+                ([, v]: any) =>
+                    String(v?.name || '').toLowerCase() === name.toLowerCase()
+            );
+            return entry ? properties[entry[0]] : null;
+        };
+        if (description == null)
+            description =
+                ['Preview', 'Description', 'Summary', 'Excerpt']
+                    .map((n) => getTextFromProp(getPropertyBySchema(n)))
+                    .find((s) => s) || null;
+        if (tags.length === 0) {
+            const tagPropNames = ['Tag', 'Tags', 'Category', 'Categories'];
+            let tagSchema: {
+                options?: Array<{ value: string; color?: string }>;
+            } | null = null;
+            for (const n of tagPropNames) {
+                const entry = Object.entries(schema).find(
+                    ([, v]: any) =>
+                        String(v?.name || '').toLowerCase() === n.toLowerCase()
+                );
+                if (entry && (entry[1] as any)?.type === 'multi_select') {
+                    tagSchema = entry[1] as any;
+                    break;
+                }
+            }
+            const ts = tagPropNames
+                .map((n) => getTextFromProp(getPropertyBySchema(n)))
+                .find((s) => s);
+            if (ts) {
+                const parts = ts
+                    .split(',')
+                    .map((t) => t.trim())
+                    .filter(Boolean);
+                tags = parts.map((name) => {
+                    const option = tagSchema?.options?.find(
+                        (o: any) =>
+                            String(o?.value || '').toLowerCase() ===
+                            name.toLowerCase()
                     );
-                    if (tagOption) {
-                        return {
-                            name: tagOption.value,
-                            color: tagOption.color
-                        };
-                    }
-                    return null;
-                })
-                .filter(Boolean);
+                    return {
+                        name,
+                        color: option?.color || getColorForTag(name)
+                    };
+                });
+            }
         }
-    } else {
-        // Fallback to common names
-        multiSelectTags =
-            getMultiSelectPropertyWithColors('Tag') ||
-            getMultiSelectPropertyWithColors('Tags') ||
-            getMultiSelectPropertyWithColors('Category') ||
-            getMultiSelectPropertyWithColors('Categories');
-    }
-
-    if (multiSelectTags.length > 0) {
-        tags = multiSelectTags;
-    } else {
-        // Fallback to text properties (without colors)
-        const tagsString =
-            getTextProperty('Tag') ||
-            getTextProperty('Tags') ||
-            getTextProperty('Category') ||
-            getTextProperty('Categories');
-        if (tagsString) {
-            tags = tagsString
-                .split(',')
-                .map((t) => ({
-                    name: t.trim(),
-                    color: 'default'
-                }))
-                .filter((t) => t.name);
+        if (dateValue == null) {
+            for (const n of ['Date', 'Published', 'Created', 'Publish Date']) {
+                const prop = getPropertyBySchema(n);
+                const dv = prop?.[0]?.[1]?.[0]?.[1];
+                if (dv?.start_date) {
+                    dateValue = dv.start_date;
+                    break;
+                }
+            }
         }
     }
 
-    // Try different property names for date
+    // When schema is empty (notion-client): infer from property structure
+    if (description == null || tags.length === 0 || dateValue == null) {
+        const inferred = inferPropertiesFromBlock(properties);
+        if (description == null) description = inferred.description;
+        if (tags.length === 0) tags = inferred.tags;
+        if (dateValue == null && inferred.date) dateValue = inferred.date;
+    }
+
+    const descriptionStr = typeof description === 'string' ? description : null;
     const date =
-        getDateProperty('Date') ||
-        getDateProperty('Published') ||
-        getDateProperty('Created') ||
-        getDateProperty('Publish Date');
+        dateValue != null
+            ? typeof dateValue === 'number'
+                ? new Date(dateValue).toISOString().split('T')[0]
+                : typeof dateValue === 'string'
+                ? dateValue
+                : Array.isArray(dateValue)
+                ? new Date(dateValue[0]).toISOString().split('T')[0]
+                : ''
+            : '';
+
+    const published =
+        getPagePropertyAny(block, recordMap, collectionId, [
+            'Published',
+            'Public',
+            'Live'
+        ]) ?? true;
 
     // Generate slug from title (no separate slug property)
     const generateSlug = (title: string): string => {
@@ -273,13 +403,6 @@ function extractPostFromBlock(
     };
 
     const slug = generateSlug(title);
-
-    // Try different property names for published status
-    const published =
-        getCheckboxProperty('Published') ||
-        getCheckboxProperty('Public') ||
-        getCheckboxProperty('Live') ||
-        true; // Default to true if no published property found
 
     // Get cover image
     const coverImage =
@@ -302,12 +425,12 @@ function extractPostFromBlock(
     return {
         id: block.id,
         title,
-        description,
+        description: descriptionStr ?? undefined,
         tags,
-        date,
+        date: date || undefined,
         slug,
         coverImage,
-        published,
+        published: !!published,
         url
     };
 }
