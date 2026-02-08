@@ -74,6 +74,14 @@ export async function getPage(pageId: string): Promise<ExtendedRecordMap> {
     const previewImageMap = await getPreviewImages(urls);
     (recordMap as any).preview_images = previewImageMap;
 
+    // Ensure all blocks have an id (react-notion-x uuidToId crashes on undefined)
+    for (const [blockId, entry] of Object.entries(recordMap.block || {})) {
+        const block = (entry as any)?.value;
+        if (block && block.id == null) {
+            block.id = blockId;
+        }
+    }
+
     return recordMap;
 }
 
