@@ -1,7 +1,6 @@
 import { ExtendedRecordMap } from 'notion-types';
 import { parsePageId, getPageProperty } from 'notion-utils';
 import * as types from './types';
-import * as config from './config';
 
 const normalizeId = (id: string) => parsePageId(id, { uuid: false }) || id;
 
@@ -412,15 +411,8 @@ function extractPostFromBlock(
     // Generate URL with PRD/Local pattern
     // PRD: wormhole-reliable-pub-sub-to-support-geo-replicated-internet-services
     // Local: wormhole-reliable-pub-sub-to-support-geo-replicated-internet-services-[pageId]
-    let url: string;
-
-    if (config.isDev) {
-        // Local development: append pageId for uniqueness
-        url = `/${slug}-${block.id}`;
-    } else {
-        // Production: use clean slug generated from title
-        url = `/${slug}`;
-    }
+    // Local development: append pageId for uniqueness
+    const url = `/${slug}-${block.id}`;
 
     return {
         id: block.id,
