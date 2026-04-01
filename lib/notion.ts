@@ -122,7 +122,7 @@ export async function getPage(pageId: string): Promise<ExtendedRecordMap> {
         mySiteNotion.getPage(pageId, {
             fetchMissingBlocks: false,
             fetchCollections: false,
-            chunkLimit: 500
+            chunkLimit: 1000
         })
     );
 
