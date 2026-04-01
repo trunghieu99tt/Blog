@@ -9,10 +9,10 @@ interface State {
  * there doesn't blank out the whole NotionRenderer page content.
  */
 export class InteractionButtonsErrorBoundary extends React.Component<
-    React.PropsWithChildren,
+    React.PropsWithChildren<object>,
     State
 > {
-    constructor(props: React.PropsWithChildren) {
+    constructor(props: React.PropsWithChildren<object>) {
         super(props);
         this.state = { hasError: false };
     }
