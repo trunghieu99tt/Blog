@@ -21,6 +21,16 @@ export const mySiteNotion = new NotionAPI({
 
 export const baseNotion = new NotionAPI({});
 
+// Uses the standard notion.so endpoint (not the workspace subdomain) so that
+// syncRecordValues calls (used by getBlocks) are not rejected with 403.
+const syncNotion = new NotionAPI({
+    authToken: process.env.NOTION_TOKEN_V2,
+    activeUser: process.env.NOTION_ACTIVE_USER,
+    kyOptions: process.env.NOTION_SPACE_ID
+        ? { headers: { 'x-notion-space-id': process.env.NOTION_SPACE_ID } }
+        : undefined
+});
+
 export const getAllPages = async (): Promise<Block[]> => {
     try {
         const response = await mySiteNotion.getPage(config.rootNotionPageId);
@@ -52,71 +62,110 @@ function normalizeBlockMap(blockMap: Record<string, any>): void {
     }
 }
 
-export async function getPage(pageId: string): Promise<ExtendedRecordMap> {
-    let pages = await mySiteNotion.getPage(pageId);
+/** Returns block IDs referenced in content arrays that are not yet in blockMap. */
+function getMissingBlockIds(blockMap: Record<string, any>): string[] {
+    const present = new Set(Object.keys(blockMap));
+    const missing = new Set<string>();
+    for (const entry of Object.values(blockMap)) {
+        const block = (entry as any)?.value;
+        if (Array.isArray(block?.content)) {
+            for (const id of block.content) {
+                if (!present.has(id)) missing.add(id);
+            }
+        }
+    }
+    return Array.from(missing);
+}
 
-    // If collection_query is empty, the API likely returned double-wrapped blocks
-    // that notion-client couldn't parse. Normalize and re-fetch collection data.
-    if (Object.keys(pages.collection_query || {}).length === 0) {
-        normalizeBlockMap(pages.block as any);
-        for (const blockEntry of Object.values(pages.block || {})) {
-            const block = (blockEntry as any)?.value;
-            if (
-                block &&
-                (block.type === 'collection_view' ||
-                    block.type === 'collection_view_page')
-            ) {
-                const collectionId: string = block.collection_id;
-                const viewIds: string[] = block.view_ids || [];
-                for (const viewId of viewIds) {
-                    try {
-                        const collectionView =
-                            pages.collection_view?.[viewId]?.value ?? block;
-                        const result = await mySiteNotion.getCollectionData(
-                            collectionId,
-                            viewId,
-                            collectionView,
-                            { limit: 9999 }
-                        );
-                        const rm = (result as any)?.recordMap;
-                        if (rm) {
-                            if (rm.block) normalizeBlockMap(rm.block);
-                            pages = {
-                                ...pages,
-                                block: { ...pages.block, ...(rm.block || {}) },
-                                collection: {
-                                    ...pages.collection,
-                                    ...(rm.collection || {})
-                                },
-                                collection_query: {
-                                    ...pages.collection_query,
-                                    ...(rm.collection_query || {})
-                                },
-                                collection_view: {
-                                    ...pages.collection_view,
-                                    ...(rm.collection_view || {})
-                                }
-                            };
-                            // Also store result.reducerResults under collection_query
-                            if ((result as any)?.result?.reducerResults) {
-                                if (!pages.collection_query[collectionId]) {
-                                    (pages.collection_query as any)[
-                                        collectionId
-                                    ] = {};
-                                }
-                                (pages.collection_query as any)[collectionId][
-                                    viewId
-                                ] = (result as any).result.reducerResults;
+export async function getPage(pageId: string): Promise<ExtendedRecordMap> {
+    // Disable fetchMissingBlocks and fetchCollections because the Notion API
+    // returns double-wrapped blocks ({ value: { value: {...}, role: "..." } })
+    // that notion-client 7.x cannot parse. We handle both manually after
+    // normalizing the block map below.
+    let pages = await mySiteNotion.getPage(pageId, {
+        fetchMissingBlocks: false,
+        fetchCollections: false,
+        chunkLimit: 500
+    });
+
+    // Flatten double-wrapped blocks so the rest of the code can read them.
+    normalizeBlockMap(pages.block as any);
+
+    // Re-fetch collection data for any collection_view blocks on the page.
+    for (const blockEntry of Object.values(pages.block || {})) {
+        const block = (blockEntry as any)?.value;
+        if (
+            block &&
+            (block.type === 'collection_view' ||
+                block.type === 'collection_view_page')
+        ) {
+            const collectionId: string = block.collection_id;
+            const viewIds: string[] = block.view_ids || [];
+            for (const viewId of viewIds) {
+                try {
+                    const collectionView =
+                        pages.collection_view?.[viewId]?.value ?? block;
+                    const result = await mySiteNotion.getCollectionData(
+                        collectionId,
+                        viewId,
+                        collectionView,
+                        { limit: 9999 }
+                    );
+                    const rm = (result as any)?.recordMap;
+                    if (rm) {
+                        if (rm.block) normalizeBlockMap(rm.block);
+                        pages = {
+                            ...pages,
+                            block: { ...pages.block, ...(rm.block || {}) },
+                            collection: {
+                                ...pages.collection,
+                                ...(rm.collection || {})
+                            },
+                            collection_query: {
+                                ...pages.collection_query,
+                                ...(rm.collection_query || {})
+                            },
+                            collection_view: {
+                                ...pages.collection_view,
+                                ...(rm.collection_view || {})
                             }
+                        };
+                        // Also store result.reducerResults under collection_query
+                        if ((result as any)?.result?.reducerResults) {
+                            if (!pages.collection_query[collectionId]) {
+                                (pages.collection_query as any)[collectionId] =
+                                    {};
+                            }
+                            (pages.collection_query as any)[collectionId][
+                                viewId
+                            ] = (result as any).result.reducerResults;
                         }
-                    } catch (err) {
-                        console.error(
-                            `[getPage] getCollectionData failed ${collectionId}/${viewId}:`,
-                            err
-                        );
                     }
+                } catch (err) {
+                    console.error(
+                        `[getPage] getCollectionData failed ${collectionId}/${viewId}:`,
+                        err
+                    );
                 }
             }
+        }
+    }
+
+    // Fetch blocks that are referenced in content arrays but not yet loaded.
+    // We loop up to 3 times to handle pages with deeply nested structures.
+    for (let pass = 0; pass < 3; pass++) {
+        const missingIds = getMissingBlockIds(pages.block);
+        if (missingIds.length === 0) break;
+
+        try {
+            const result = await (syncNotion as any).getBlocks(missingIds);
+            const newBlocks = result?.recordMap?.block;
+            if (!newBlocks || Object.keys(newBlocks).length === 0) break;
+            normalizeBlockMap(newBlocks);
+            pages = { ...pages, block: { ...pages.block, ...newBlocks } };
+        } catch (err) {
+            console.error('[getPage] fetchMissingBlocks pass failed:', err);
+            break;
         }
     }
 

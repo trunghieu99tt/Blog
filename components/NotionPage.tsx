@@ -30,6 +30,7 @@ import Toolbox from './Toolbox';
 import InteractionButtons from './InteractionButtons';
 import { InteractionButtonsErrorBoundary } from './InteractionButtons/InteractionButtonsErrorBoundary';
 import { CustomHomePage } from './CustomHomePage';
+import ReadingProgress from './ReadingProgress';
 
 const Code = dynamic(
     () =>
@@ -186,6 +187,8 @@ export const NotionPage: React.FC<types.PageProps> = ({
 
     return (
         <React.Fragment>
+            {isBlogPost && <ReadingProgress />}
+
             <PageHead
                 site={site}
                 title={title}

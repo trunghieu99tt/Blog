@@ -534,13 +534,100 @@
     }
 }
 
+/* ─── Table of Contents ──────────────────────────────────────────── */
+
 .notion-aside-table-of-contents {
-    max-height: 60vh !important;
+    max-height: calc(100vh - 120px) !important;
+    overflow-y: auto;
+    padding: 0 0.5rem 1rem 1.25rem;
+    border-left: 1.5px solid var(--border-color);
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) transparent;
 }
 
+.notion-aside-table-of-contents::-webkit-scrollbar {
+    width: 3px;
+}
+.notion-aside-table-of-contents::-webkit-scrollbar-track {
+    background: transparent;
+}
+.notion-aside-table-of-contents::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 99px;
+}
+
+/* Header label */
+.notion-aside-table-of-contents-header {
+    font-size: 0.62rem !important;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.6rem;
+    padding-bottom: 0.5rem;
+}
+
+/* Each item row */
+.notion-aside-table-of-contents .notion-table-of-contents-item {
+    display: block;
+    padding: 0.22rem 0.5rem;
+    border-radius: 4px;
+    border-left: 2px solid transparent;
+    margin-left: -2px;
+    color: var(--text-primary);
+    transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+    cursor: pointer;
+}
+
+.notion-aside-table-of-contents .notion-table-of-contents-item:hover {
+    color: #000;
+    background: var(--background-secondary);
+}
+
+/* Active item */
+.notion-aside-table-of-contents .notion-table-of-contents-active-item {
+    color: var(--secondary-color) !important;
+    border-left-color: var(--secondary-color) !important;
+    background: rgba(99, 102, 241, 0.07) !important;
+    font-weight: 500;
+}
+
+/* Item body text */
 .notion-aside-table-of-contents .notion-table-of-contents-item-body {
+    font-size: 0.9rem !important;
     line-height: 1.5;
     text-wrap: auto;
+    white-space: normal;
+}
+
+/* Indentation levels */
+.notion-aside-table-of-contents .notion-table-of-contents-item-indent-level-0 {
+    padding-left: 0.4rem;
+}
+.notion-aside-table-of-contents .notion-table-of-contents-item-indent-level-1 {
+    padding-left: 1.1rem;
+}
+.notion-aside-table-of-contents .notion-table-of-contents-item-indent-level-2 {
+    padding-left: 1.8rem;
+}
+
+/* Dark mode */
+.dark-mode .notion-aside-table-of-contents {
+    border-left-color: var(--dark-border-color);
+    scrollbar-color: var(--dark-border-color) transparent;
+}
+.dark-mode .notion-aside-table-of-contents::-webkit-scrollbar-thumb {
+    background-color: var(--dark-border-color);
+}
+.dark-mode .notion-aside-table-of-contents .notion-table-of-contents-item {
+    color: var(--dark-text-primary);
+}
+.dark-mode .notion-aside-table-of-contents .notion-table-of-contents-item:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.07);
+}
+.dark-mode .notion-aside-table-of-contents .notion-table-of-contents-active-item {
+    background: rgba(99, 102, 241, 0.12) !important;
 }
 
 .notion-property-select,
