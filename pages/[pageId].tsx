@@ -2,9 +2,6 @@ import React from 'react';
 import { domain } from 'lib/config';
 import { resolveNotionPage } from 'lib/resolve-notion-page';
 import { NotionPage } from 'components';
-import { getAllPages } from 'lib/notion';
-import { Block } from 'lib/types';
-import { parsePageId } from 'notion-utils';
 
 export const getStaticProps = async (context) => {
     const rawPageId = context.params.pageId as string;
@@ -18,18 +15,10 @@ export const getStaticProps = async (context) => {
             };
         }
 
-        const allPosts = await getAllPages();
-        const post =
-            allPosts.find((post: Block) => {
-                return post?.id === parsePageId(rawPageId);
-            }) || null;
         const props = await resolveNotionPage(domain, rawPageId);
 
         return {
-            props: {
-                ...props,
-                post
-            },
+            props,
             revalidate: 10
         };
     } catch (err) {

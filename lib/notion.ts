@@ -63,13 +63,13 @@ function normalizeBlockMap(blockMap: Record<string, any>): void {
 }
 
 /**
- * Retries an async function on 429 Too Many Requests with exponential backoff.
- * Notion's API rate-limits hard during parallel SSG builds.
+ * Retries an async function once on 429 Too Many Requests.
+ * Delays are capped at 2s so we never blow Vercel's 10s function timeout.
  */
 async function withRetry<T>(
     fn: () => Promise<T>,
-    maxAttempts = 5,
-    baseDelayMs = 2000
+    maxAttempts = 2,
+    baseDelayMs = 500
 ): Promise<T> {
     let lastError: unknown;
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
@@ -81,13 +81,17 @@ async function withRetry<T>(
             if (status === 429) {
                 const retryAfterSec =
                     err?.response?.headers?.get?.('Retry-After');
-                const delay = retryAfterSec
-                    ? parseInt(retryAfterSec) * 1000
-                    : baseDelayMs * Math.pow(2, attempt);
+                // Hard-cap at 2s so retries never cause a serverless timeout.
+                const delay = Math.min(
+                    retryAfterSec
+                        ? parseInt(retryAfterSec) * 1000
+                        : baseDelayMs * Math.pow(2, attempt),
+                    2000
+                );
                 console.warn(
-                    `[notion] 429 rate limit – retrying in ${Math.round(
-                        delay / 1000
-                    )}s (attempt ${attempt + 1}/${maxAttempts})`
+                    `[notion] 429 rate limit – retrying in ${delay}ms (attempt ${
+                        attempt + 1
+                    }/${maxAttempts})`
                 );
                 await new Promise((resolve) => setTimeout(resolve, delay));
             } else {
