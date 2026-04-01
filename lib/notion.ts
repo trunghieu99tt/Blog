@@ -62,6 +62,42 @@ function normalizeBlockMap(blockMap: Record<string, any>): void {
     }
 }
 
+/**
+ * Retries an async function on 429 Too Many Requests with exponential backoff.
+ * Notion's API rate-limits hard during parallel SSG builds.
+ */
+async function withRetry<T>(
+    fn: () => Promise<T>,
+    maxAttempts = 5,
+    baseDelayMs = 2000
+): Promise<T> {
+    let lastError: unknown;
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        try {
+            return await fn();
+        } catch (err: any) {
+            lastError = err;
+            const status = err?.response?.status ?? err?.status;
+            if (status === 429) {
+                const retryAfterSec =
+                    err?.response?.headers?.get?.('Retry-After');
+                const delay = retryAfterSec
+                    ? parseInt(retryAfterSec) * 1000
+                    : baseDelayMs * Math.pow(2, attempt);
+                console.warn(
+                    `[notion] 429 rate limit – retrying in ${Math.round(
+                        delay / 1000
+                    )}s (attempt ${attempt + 1}/${maxAttempts})`
+                );
+                await new Promise((resolve) => setTimeout(resolve, delay));
+            } else {
+                throw err;
+            }
+        }
+    }
+    throw lastError;
+}
+
 /** Returns block IDs referenced in content arrays that are not yet in blockMap. */
 function getMissingBlockIds(blockMap: Record<string, any>): string[] {
     const present = new Set(Object.keys(blockMap));
@@ -82,11 +118,13 @@ export async function getPage(pageId: string): Promise<ExtendedRecordMap> {
     // returns double-wrapped blocks ({ value: { value: {...}, role: "..." } })
     // that notion-client 7.x cannot parse. We handle both manually after
     // normalizing the block map below.
-    let pages = await mySiteNotion.getPage(pageId, {
-        fetchMissingBlocks: false,
-        fetchCollections: false,
-        chunkLimit: 500
-    });
+    let pages = await withRetry(() =>
+        mySiteNotion.getPage(pageId, {
+            fetchMissingBlocks: false,
+            fetchCollections: false,
+            chunkLimit: 500
+        })
+    );
 
     // Flatten double-wrapped blocks so the rest of the code can read them.
     normalizeBlockMap(pages.block as any);
@@ -105,11 +143,13 @@ export async function getPage(pageId: string): Promise<ExtendedRecordMap> {
                 try {
                     const collectionView =
                         pages.collection_view?.[viewId]?.value ?? block;
-                    const result = await mySiteNotion.getCollectionData(
-                        collectionId,
-                        viewId,
-                        collectionView,
-                        { limit: 9999 }
+                    const result = await withRetry(() =>
+                        mySiteNotion.getCollectionData(
+                            collectionId,
+                            viewId,
+                            collectionView,
+                            { limit: 9999 }
+                        )
                     );
                     const rm = (result as any)?.recordMap;
                     if (rm) {
@@ -158,13 +198,22 @@ export async function getPage(pageId: string): Promise<ExtendedRecordMap> {
         if (missingIds.length === 0) break;
 
         try {
-            const result = await (syncNotion as any).getBlocks(missingIds);
+            const result: any = await withRetry(() =>
+                (syncNotion as any).getBlocks(missingIds)
+            );
             const newBlocks = result?.recordMap?.block;
             if (!newBlocks || Object.keys(newBlocks).length === 0) break;
             normalizeBlockMap(newBlocks);
             pages = { ...pages, block: { ...pages.block, ...newBlocks } };
         } catch (err) {
             console.error('[getPage] fetchMissingBlocks pass failed:', err);
+            // Log the full error so it appears in Vercel's function logs
+            if (err && typeof err === 'object' && 'response' in err) {
+                console.error(
+                    '[getPage] response status:',
+                    (err as any).response?.status
+                );
+            }
             break;
         }
     }
