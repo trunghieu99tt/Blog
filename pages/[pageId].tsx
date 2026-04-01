@@ -1,7 +1,11 @@
 import React from 'react';
-import { domain } from 'lib/config';
+import { isDev, domain } from 'lib/config';
+import { getSiteMaps } from 'lib/get-site-maps';
 import { resolveNotionPage } from 'lib/resolve-notion-page';
 import { NotionPage } from 'components';
+import { getAllPages } from 'lib/notion';
+import { Block } from 'lib/types';
+import { parsePageId } from 'notion-utils';
 
 export const getStaticProps = async (context) => {
     const rawPageId = context.params.pageId as string;
@@ -15,10 +19,18 @@ export const getStaticProps = async (context) => {
             };
         }
 
+        const allPosts = await getAllPages();
+        const post =
+            allPosts.find((post: Block) => {
+                return post?.id === parsePageId(rawPageId);
+            }) || null;
         const props = await resolveNotionPage(domain, rawPageId);
 
         return {
-            props,
+            props: {
+                ...props,
+                post
+            },
             revalidate: 10
         };
     } catch (err) {
@@ -28,13 +40,27 @@ export const getStaticProps = async (context) => {
 };
 
 export async function getStaticPaths() {
-    // Never pre-render pages at build time — build on first visit and cache via ISR.
-    // This avoids hammering the Notion API in parallel during deployment (429s)
-    // and keeps build times fast regardless of how many posts exist.
-    return {
-        paths: [],
-        fallback: 'blocking'
+    if (isDev) {
+        return {
+            paths: [],
+            fallback: 'blocking'
+        };
+    }
+
+    const siteMaps = await getSiteMaps();
+
+    const ret = {
+        paths: siteMaps.flatMap((siteMap) =>
+            Object.keys(siteMap.canonicalPageMap).map((pageId) => ({
+                params: {
+                    pageId
+                }
+            }))
+        ),
+        fallback: true
     };
+
+    return ret;
 }
 
 export default function NotionDomainDynamicPage(props) {
