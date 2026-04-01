@@ -4,6 +4,7 @@ import { formatCount, getInteractionCounts } from '../../lib/interactions';
 import { useFireworks } from './useFireworks';
 import ShareMenu from './ShareMenu';
 import { api } from '../../lib/config';
+import { useCountUp } from './useCountUp';
 
 interface InteractionButtonsProps {
     postId: string;
@@ -25,6 +26,9 @@ export default function InteractionButtons({
         likes: 0,
         shares: 0
     });
+    const [views, setViews] = useState(0);
+    const [viewUpdated, setViewUpdated] = useState(false);
+    const isInitialViewFetch = useRef(true);
     const [isLoading, setIsLoading] = useState(false);
     const [likesRemaining, setLikesRemaining] = useState(5);
     const [showShareMenu, setShowShareMenu] = useState(false);
@@ -33,8 +37,11 @@ export default function InteractionButtons({
 
     const likeButtonRef = useRef<HTMLButtonElement>(null);
     const shareButtonRef = useRef<HTMLButtonElement>(null);
+    const viewButtonRef = useRef<HTMLDivElement>(null);
     const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const { triggerFirework } = useFireworks();
+
+    const displayedViews = useCountUp(views);
 
     const MAX_LIKES = 5;
     const DEBOUNCE_DELAY = 2000; // 800ms debounce - wait for user to stop clicking
@@ -69,6 +76,48 @@ export default function InteractionButtons({
 
         fetchCounts();
     }, [postId, MAX_LIKES]);
+
+    // Record this page view after the user has been on the page for 8 seconds.
+    // A fresh sessionId is generated on each page load so the same visitor
+    // is counted again on subsequent visits while quick bounces are ignored.
+    useEffect(() => {
+        const sessionId = crypto.randomUUID();
+
+        const delay = 5000 + Math.random() * 5000; // random 5–10s
+        const timer = setTimeout(async () => {
+            try {
+                const response = await fetch(`${api.pageViews}/${postId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sessionId })
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setViews(data.views ?? 0);
+                    setViewUpdated(true);
+                    if (viewButtonRef.current) {
+                        triggerFirework(
+                            viewButtonRef.current as unknown as HTMLElement,
+                            '#06b6d4'
+                        );
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to record page view:', error);
+            }
+        }, delay);
+
+        // Also fetch the current count immediately so the display isn't blank
+        fetch(`${api.pageViews}/${postId}`)
+            .then((r) => r.json())
+            .then((data) => {
+                setViews(data.views ?? 0);
+                isInitialViewFetch.current = false;
+            })
+            .catch(() => {});
+
+        return () => clearTimeout(timer);
+    }, [postId]);
 
     // Throttled API call to update likes on the server
     const sendLikesToServer = useCallback(
@@ -339,6 +388,42 @@ export default function InteractionButtons({
                         {formatCount(interactions.shares)}
                     </span>
                 </button>
+
+                <div
+                    ref={viewButtonRef}
+                    className={`${styles.button} ${styles.viewButton}`}
+                    aria-label={`${views} unique page views`}
+                    title={`${views} unique visitors`}
+                >
+                    <div className={styles.viewButtonBgPane} />
+                    <svg
+                        className={styles.icon}
+                        viewBox='0 0 24 24'
+                        fill='none'
+                        stroke='currentColor'
+                    >
+                        <path
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                            strokeWidth={2}
+                            d='M15 12a3 3 0 11-6 0 3 3 0 016 0z'
+                        />
+                        <path
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                            strokeWidth={2}
+                            d='M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z'
+                        />
+                    </svg>
+                    <span
+                        className={`${styles.count} ${styles.viewCount}${
+                            viewUpdated ? ` ${styles.viewCountUpdated}` : ''
+                        }`}
+                        onAnimationEnd={() => setViewUpdated(false)}
+                    >
+                        {displayedViews > 999 ? '999+' : displayedViews}
+                    </span>
+                </div>
             </div>
 
             <ShareMenu

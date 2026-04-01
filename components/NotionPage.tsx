@@ -28,6 +28,7 @@ import BlogHeader from './BlogHeader';
 import { useFontChooser } from './FontChooser/useFontChooser';
 import Toolbox from './Toolbox';
 import InteractionButtons from './InteractionButtons';
+import { InteractionButtonsErrorBoundary } from './InteractionButtons/InteractionButtonsErrorBoundary';
 import { CustomHomePage } from './CustomHomePage';
 
 const Code = dynamic(
@@ -169,11 +170,13 @@ export const NotionPage: React.FC<types.PageProps> = ({
 
     // Add interaction buttons for blog posts
     const interactionButtons = isBlogPost && (
-        <InteractionButtons
-            postId={pageId}
-            postTitle={title}
-            postUrl={getCanonicalPageUrl(site, recordMap)(pageId)}
-        />
+        <InteractionButtonsErrorBoundary>
+            <InteractionButtons
+                postId={pageId}
+                postTitle={title}
+                postUrl={getCanonicalPageUrl(site, recordMap)(pageId)}
+            />
+        </InteractionButtonsErrorBoundary>
     );
 
     // Use custom homepage for root page, otherwise use NotionRenderer

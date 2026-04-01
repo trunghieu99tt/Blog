@@ -108,7 +108,8 @@ export const apiBaseUrl = `${host}/api`;
 export const api = {
     createPreviewImage: `${apiBaseUrl}/create-preview-image`,
     searchNotion: `${apiBaseUrl}/search-notion`,
-    interactions: `${apiBaseUrl}/interactions`
+    interactions: `${apiBaseUrl}/interactions`,
+    pageViews: `${apiBaseUrl}/page-views`
 };
 
 // ----------------------------------------------------------------------------
