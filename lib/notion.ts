@@ -124,9 +124,9 @@ export async function getPage(pageId: string): Promise<ExtendedRecordMap> {
     // normalizing the block map below.
     let pages = await withRetry(() =>
         mySiteNotion.getPage(pageId, {
-            fetchMissingBlocks: false,
-            fetchCollections: false,
-            chunkLimit: 1000
+            fetchMissingBlocks: true,
+            fetchCollections: true,
+            chunkLimit: 3000
         })
     );
 
